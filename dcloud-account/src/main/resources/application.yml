@@ -26,3 +26,8 @@ spring:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#sms短信配置
+sms:
+  app-code: 48983c708007494fbf6572cbd553d143
+  template-id: M72CB42894
