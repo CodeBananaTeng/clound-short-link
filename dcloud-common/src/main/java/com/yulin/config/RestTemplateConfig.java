@@ -53,6 +53,13 @@ public class RestTemplateConfig {
          *
          * 请求   yulin.net，最大并发300
          * 请求   yulin1.com，最大并发300 但是这个和上面的请求数不能超过500（上面设置的）所以这个只能是200
+         *
+         *
+         *
+         * //MaxtTotal=400 DefaultMaxPerRoute=200
+         * 只连接到http://yulin.net时，到这个主机的并发最多只有200；而不是400；
+         * 而连接到http://yulin.net 和 http://yulin123.com时，到每个主机的并发最多只有200；
+         * 即加起来是400（但不能超过400）；所以起作用的设置是DefaultMaxPerRoute。
          */
         connectionManager.setDefaultMaxPerRoute(300);
 
