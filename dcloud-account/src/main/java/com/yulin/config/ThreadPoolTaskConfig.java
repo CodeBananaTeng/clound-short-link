@@ -17,17 +17,17 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class ThreadPoolTaskConfig {
 
-    @Bean("threadPoolExecutor")
+    @Bean("threadPoolTaskExecutor")
     public ThreadPoolTaskExecutor threadPoolExecutor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         ///线程池创建的核⼼线程数，线程池维护线程的最少数ᰁ，即使没有任务需要执⾏，也会⼀直存活
         //如果设置allowCoreThreadTimeout=true（默认false）时，核⼼线程会超时关闭
-        executor.setCorePoolSize(8);
+        executor.setCorePoolSize(16);
         //executor.setAllowCoreThreadTimeOut();
 
 
         //缓存队列（阻塞队列）当核⼼线程数达到最⼤时，新任务会放在队列中排队等待执⾏
-        executor.setQueueCapacity(124);
+        executor.setQueueCapacity(1024);
         //最⼤线程池数ᰁ，当线程数>=corePoolSize，且任务队列已满时。线程池会创建新线程来处理任务
         //当线程数=maxPoolSize，且任务队列已满时，线程池会拒绝处理任务⽽抛出异常
         executor.setMaxPoolSize(64);
