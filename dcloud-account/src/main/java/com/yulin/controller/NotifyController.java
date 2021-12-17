@@ -1,15 +1,16 @@
 package com.yulin.controller;
 
 import com.google.code.kaptcha.Producer;
+import com.yulin.controller.request.SendCodeRequest;
+import com.yulin.enums.BizCodeEnum;
+import com.yulin.enums.SengCodeEnum;
 import com.yulin.service.NotifyService;
 import com.yulin.utils.CommonUtil;
 import com.yulin.utils.JsonData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -61,13 +62,26 @@ public class NotifyController {
     }
 
     /**
-     * 测试验证码发送接口，用于验证优化
+     * 发送短信接口
      * @return
      */
-    @GetMapping("/send_code")
-    public JsonData sendCode(){
+    @PostMapping("/send_code")
+    public JsonData sendCode(@RequestBody SendCodeRequest sendCodeRequest,HttpServletRequest request){
 
-        return JsonData.buildSuccess();
+        String key = getCaptchaKey(request);
+
+        String cacheCaptcha = stringRedisTemplate.opsForValue().get(key);
+        String captcha = sendCodeRequest.getCaptcha();
+        if (captcha != null && cacheCaptcha != null && cacheCaptcha.equalsIgnoreCase(captcha)){
+            //成功
+            stringRedisTemplate.delete(key);
+            JsonData jsonData = notifyService.sendCode(SengCodeEnum.USER_REGISTER,sendCodeRequest.getTo());
+            return jsonData;
+        }else {
+            //失败
+            return JsonData.buildResult(BizCodeEnum.CODE_CAPTCHA_ERROR);
+        }
+
     }
 
     private String getCaptchaKey(HttpServletRequest request){
