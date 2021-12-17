@@ -45,3 +45,10 @@ mybatis-plus:
 sms:
   app-code: 48983c708007494fbf6572cbd553d143
   template-id: M72CB42894
+
+aliyun:
+  oss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    access-key-id: LTAI5tE21G7pCdVZEKYCVtTq
+    access-key-secret: FU4wCTYabaDTHEpfylPRqh0eLn828W
+    bucketname: dcloud-link-yulin
