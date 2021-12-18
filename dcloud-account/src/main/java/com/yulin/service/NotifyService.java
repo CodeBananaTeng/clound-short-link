@@ -16,4 +16,11 @@ public interface NotifyService {
      * @return
      */
     JsonData sendCode(SengCodeEnum userRegister, String to);
+
+    /**
+     * 验证验证码的正确性
+     * @return
+     */
+    boolean checkCode(SengCodeEnum userRegister, String to,String code);
+
 }
