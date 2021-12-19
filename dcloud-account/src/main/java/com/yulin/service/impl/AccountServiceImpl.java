@@ -87,7 +87,6 @@ public class AccountServiceImpl implements AccountService {
         List<AccountDO> accountDOList = accountManage.findByPhone(request.getPhone());
         if (accountDOList != null && accountDOList.size() ==1){
             AccountDO accountDO = accountDOList.get(0);
-
             String md5Crypt = Md5Crypt.md5Crypt(request.getPwd().getBytes(), accountDO.getSecret());
             if (md5Crypt.equalsIgnoreCase(accountDO.getPwd())){
                 //生成的密文成功匹配生成token TODO
