@@ -1,5 +1,6 @@
 package com.yulin.service.impl;
 
+import com.yulin.controller.request.AccountLoginRequest;
 import com.yulin.controller.request.AccountRegisterRequest;
 import com.yulin.enums.AuthTypeEnum;
 import com.yulin.enums.BizCodeEnum;
@@ -82,16 +83,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
-    public JsonData login() {
-        return null;
-    }
-
-    /**
-     * 用户初始化发放流量包 TODO
-     * @param request
-     */
-    private JsonData userRegisterInitTask(AccountDO request) {
-
+    public JsonData login(AccountLoginRequest request) {
         List<AccountDO> accountDOList = accountManage.findByPhone(request.getPhone());
         if (accountDOList != null && accountDOList.size() ==1){
             AccountDO accountDO = accountDOList.get(0);
@@ -110,6 +102,16 @@ public class AccountServiceImpl implements AccountService {
         }else {
             return JsonData.buildResult(BizCodeEnum.ACCOUNT_UNREGISTER);
         }
+
+    }
+
+    /**
+     * 用户初始化发放流量包 TODO
+     * @param request
+     */
+    private JsonData userRegisterInitTask(AccountDO request) {
+
+        return null;
     }
 
 }

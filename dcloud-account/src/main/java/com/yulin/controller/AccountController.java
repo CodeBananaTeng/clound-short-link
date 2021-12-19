@@ -55,7 +55,7 @@ public class AccountController {
 
     @PostMapping("login")
     public JsonData login(@RequestBody AccountLoginRequest request){
-        JsonData jsonData = accountService.login();
+        JsonData jsonData = accountService.login(request);
         return jsonData;
     }
 

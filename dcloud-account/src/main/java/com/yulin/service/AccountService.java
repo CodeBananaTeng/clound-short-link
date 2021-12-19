@@ -1,5 +1,6 @@
 package com.yulin.service;
 
+import com.yulin.controller.request.AccountLoginRequest;
 import com.yulin.controller.request.AccountRegisterRequest;
 import com.yulin.utils.JsonData;
 
@@ -20,5 +21,5 @@ public interface AccountService {
      * 用户登录
      * @return
      */
-    JsonData login();
+    JsonData login(AccountLoginRequest request);
 }
