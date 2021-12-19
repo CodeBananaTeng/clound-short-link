@@ -6,6 +6,7 @@ import com.yulin.enums.BizCodeEnum;
 import com.yulin.enums.SengCodeEnum;
 import com.yulin.manage.AccountManage;
 import com.yulin.model.AccountDO;
+import com.yulin.model.LoginUser;
 import com.yulin.service.AccountService;
 import com.yulin.service.NotifyService;
 import com.yulin.utils.CommonUtil;
@@ -16,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Auther:LinuxTYL
@@ -66,7 +69,47 @@ public class AccountServiceImpl implements AccountService {
         log.info("rows:{},注册成功",rows);
 
         //用户注册成功发放福利
+        userRegisterInitTask(accountDO);
+
+        return JsonData.buildSuccess();
+    }
+
+    /**
+     * 这个密码加上盐后的密文是否匹配
+     * 1，根据手机号查看是否有记录
+     * 2，
+     * 用户注册
+     * @return
+     */
+    @Override
+    public JsonData login() {
         return null;
+    }
+
+    /**
+     * 用户初始化发放流量包 TODO
+     * @param request
+     */
+    private JsonData userRegisterInitTask(AccountDO request) {
+
+        List<AccountDO> accountDOList = accountManage.findByPhone(request.getPhone());
+        if (accountDOList != null && accountDOList.size() ==1){
+            AccountDO accountDO = accountDOList.get(0);
+
+            String md5Crypt = Md5Crypt.md5Crypt(request.getPwd().getBytes(), accountDO.getSecret());
+            if (md5Crypt.equalsIgnoreCase(accountDO.getPwd())){
+                //生成的密文成功匹配生成token TODO
+                LoginUser loginUser = LoginUser.builder().build();
+                BeanUtils.copyProperties(accountDO,loginUser);
+
+                return JsonData.buildSuccess("");
+            }else {
+                return JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
+            }
+
+        }else {
+            return JsonData.buildResult(BizCodeEnum.ACCOUNT_UNREGISTER);
+        }
     }
 
 }

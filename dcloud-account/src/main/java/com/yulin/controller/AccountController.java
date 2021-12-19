@@ -1,6 +1,7 @@
 package com.yulin.controller;
 
 
+import com.yulin.controller.request.AccountLoginRequest;
 import com.yulin.controller.request.AccountRegisterRequest;
 import com.yulin.enums.BizCodeEnum;
 import com.yulin.service.AccountService;
@@ -49,6 +50,12 @@ public class AccountController {
     @PostMapping("register")
     public JsonData register(@RequestBody AccountRegisterRequest registerRequest){
         JsonData jsonData = accountService.register(registerRequest);
+        return jsonData;
+    }
+
+    @PostMapping("login")
+    public JsonData login(@RequestBody AccountLoginRequest request){
+        JsonData jsonData = accountService.login();
         return jsonData;
     }
 

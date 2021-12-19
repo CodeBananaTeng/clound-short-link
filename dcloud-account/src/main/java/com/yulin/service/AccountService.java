@@ -9,6 +9,16 @@ import com.yulin.utils.JsonData;
  * @Description:
  */
 public interface AccountService {
+    /**
+     * 用户注册
+     * @param registerRequest
+     * @return
+     */
     JsonData register(AccountRegisterRequest registerRequest);
 
+    /**
+     * 用户登录
+     * @return
+     */
+    JsonData login();
 }

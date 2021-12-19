@@ -2,6 +2,8 @@ package com.yulin.manage;
 
 import com.yulin.model.AccountDO;
 
+import java.util.List;
+
 /**
  * @Auther:LinuxTYL
  * @Date:2021/12/15
@@ -11,4 +13,5 @@ public interface AccountManage {
 
     int insert(AccountDO accountDO);
 
+    List<AccountDO> findByPhone(String phone);
 }
