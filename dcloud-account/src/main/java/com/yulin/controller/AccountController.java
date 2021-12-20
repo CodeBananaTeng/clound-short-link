@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @since 2021-12-15
  */
 @RestController
-@RequestMapping("/api/v1/account")
+@RequestMapping("/api/account/v1")
 public class AccountController {
 
     @Autowired
@@ -53,6 +53,11 @@ public class AccountController {
         return jsonData;
     }
 
+    /**
+     * 登录逻辑
+     * @param request
+     * @return
+     */
     @PostMapping("login")
     public JsonData login(@RequestBody AccountLoginRequest request){
         JsonData jsonData = accountService.login(request);

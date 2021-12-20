@@ -11,6 +11,7 @@ import com.yulin.model.LoginUser;
 import com.yulin.service.AccountService;
 import com.yulin.service.NotifyService;
 import com.yulin.utils.CommonUtil;
+import com.yulin.utils.JWTUtil;
 import com.yulin.utils.JsonData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Md5Crypt;
@@ -61,15 +62,18 @@ public class AccountServiceImpl implements AccountService {
         BeanUtils.copyProperties(registerRequest,accountDO);
         //设置认证级别，刚刚注册就是默认的
         accountDO.setAuth(AuthTypeEnum.DEFAULT.name());
+
+        //生成唯一的账号 TODO
+        accountDO.setAccountNo(CommonUtil.getCurrentTimestamp());
         //设置密码,秘钥 盐
         accountDO.setSecret("$1$" + CommonUtil.getStringNumRandom(8));
 
         String cryptPwd = Md5Crypt.md5Crypt(registerRequest.getPwd().getBytes(),accountDO.getSecret());
-        accountDO.setPhone(cryptPwd);
+        accountDO.setPwd(cryptPwd);
         int rows = accountManage.insert(accountDO);
         log.info("rows:{},注册成功",rows);
 
-        //用户注册成功发放福利
+        //用户注册成功发放福利 TODO
         userRegisterInitTask(accountDO);
 
         return JsonData.buildSuccess();
@@ -92,8 +96,8 @@ public class AccountServiceImpl implements AccountService {
                 //生成的密文成功匹配生成token TODO
                 LoginUser loginUser = LoginUser.builder().build();
                 BeanUtils.copyProperties(accountDO,loginUser);
-
-                return JsonData.buildSuccess("");
+                String token = JWTUtil.geneJsonWebToken(loginUser);
+                return JsonData.buildSuccess(token);
             }else {
                 return JsonData.buildResult(BizCodeEnum.ACCOUNT_PWD_ERROR);
             }
