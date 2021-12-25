@@ -11,6 +11,7 @@ import com.yulin.model.LoginUser;
 import com.yulin.service.AccountService;
 import com.yulin.service.NotifyService;
 import com.yulin.utils.CommonUtil;
+import com.yulin.utils.IDUtil;
 import com.yulin.utils.JWTUtil;
 import com.yulin.utils.JsonData;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,9 @@ public class AccountServiceImpl implements AccountService {
         accountDO.setAuth(AuthTypeEnum.DEFAULT.name());
 
         //生成唯一的账号 TODO
-        accountDO.setAccountNo(CommonUtil.getCurrentTimestamp());
+        //accountDO.setAccountNo(CommonUtil.getCurrentTimestamp());
+        accountDO.setAccountNo(Long.valueOf(IDUtil.geneSnowFlakeID().toString()));
+
         //设置密码,秘钥 盐
         accountDO.setSecret("$1$" + CommonUtil.getStringNumRandom(8));
 

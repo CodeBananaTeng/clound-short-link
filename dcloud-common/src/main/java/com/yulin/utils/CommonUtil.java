@@ -1,5 +1,6 @@
 package com.yulin.utils;
 
+import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
@@ -162,5 +163,15 @@ public class CommonUtil {
         } catch (IOException e) {
             log.warn("响应json数据给前端异常:{}",e);
         }
+    }
+
+    /**
+     * murmurHash算法
+     * @param param
+     * @return
+     */
+    public static long murmurHash32(String param){
+        long murmurHash32 = Hashing.murmur3_32().hashUnencodedChars(param).padToLong();
+        return murmurHash32;
     }
 }
