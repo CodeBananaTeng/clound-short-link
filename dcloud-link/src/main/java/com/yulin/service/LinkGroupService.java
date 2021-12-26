@@ -1,6 +1,10 @@
 package com.yulin.service;
 
 import com.yulin.controller.request.LinkGroupAddRequest;
+import com.yulin.controller.request.LinkGroupUpdateRequest;
+import com.yulin.vo.LinkGroupVO;
+
+import java.util.List;
 
 /**
  * @Auther:LinuxTYL
@@ -22,5 +26,25 @@ public interface LinkGroupService {
      * @return
      */
     int del(Long groupId);
+
+    /**
+     * 详情
+     * @param groupId
+     * @return
+     */
+    LinkGroupVO detail(Long groupId);
+
+    /**
+     * 列出用户全部分组
+     * @return
+     */
+    List<LinkGroupVO> listAllGroup();
+
+    /**
+     * 更新组名id
+     * @param request
+     * @return
+     */
+    int updateById(LinkGroupUpdateRequest request);
 
 }
