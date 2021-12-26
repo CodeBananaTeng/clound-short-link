@@ -59,10 +59,10 @@ public class ShortLinkTest {
     @Test
     public void testSaveShort(){
         Random random = new Random();
-        for (int i = 0; i < 100; i++) {
+        //for (int i = 0; i < 10; i++) {
             int num1 = random.nextInt(10);
-            int num2 = random.nextInt(10000000);
-            int num3 = random.nextInt(10000000);
+            int num2 = random.nextInt(100000000);
+            int num3 = random.nextInt(100000000);
             String originalUrl = num1 + "yulin" + num2 + ".net" + num3;
             String shortLinkCode = shortLinkComponent.createShortLinkCode(originalUrl);
             ShortLinkDO shortLinkDO = new ShortLinkDO();
@@ -72,7 +72,12 @@ public class ShortLinkTest {
             shortLinkDO.setDel(0);
 
             shortLinkManager.addShortLink(shortLinkDO);
-        }
+        //}
     }
 
+    @Test
+    public void testFind(){
+        ShortLinkDO byShortLinkCode = shortLinkManager.findByShortLinkCode("11hAHEja");
+        log.info(byShortLinkCode.toString());
+    }
 }
