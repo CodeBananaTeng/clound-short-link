@@ -34,16 +34,17 @@ public class JWTUtil {
     /**
      * 过期时间,时间是7天
      */
-    private static final long EXPIRE = 1000 * 60 * 60 *24 * 7;
+    private static final long EXPIRED = 1000 * 60 * 60 *24 * 7;
 
     /**
      * 生成token
      * @return
      */
     public static String geneJsonWebToken(LoginUser loginUser){
-        if (loginUser == null){
+        if (loginUser == null) {
             throw new NullPointerException("对象为空");
         }
+
         String token = Jwts.builder().setSubject(SUBJECT)
                 //配置payload
                 .claim("head_img", loginUser.getHeadImg())
@@ -52,13 +53,10 @@ public class JWTUtil {
                 .claim("mail", loginUser.getMail())
                 .claim("phone", loginUser.getPhone())
                 .claim("auth", loginUser.getAuth())
-                //发布时间
                 .setIssuedAt(new Date())
-                //设置过期时间
-                .setExpiration(new Date(CommonUtil.getCurrentTimestamp() + EXPIRE))
-                //设置签名算法
+                .setExpiration(new Date(CommonUtil.getCurrentTimestamp() + EXPIRED))
                 .signWith(SignatureAlgorithm.HS256, SECRET).compact();
-        //拼接token
+        System.out.println(new Date(CommonUtil.getCurrentTimestamp() + EXPIRED));
         token = TOKEN_PREFIX + token;
         return token;
     }
@@ -68,12 +66,15 @@ public class JWTUtil {
      * @param token
      * @return
      */
-    public static Claims checkJWT(String token){
-        try{
-            final Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJwt(token.replace(TOKEN_PREFIX, "")).getBody();
+    public static Claims checkJWT(String token) {
+
+        try {
+            final Claims claims = Jwts.parser().setSigningKey(SECRET)
+                    .parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody();
             return claims;
-        }catch (Exception e){
-            log.error("JWT解密失败");
+        } catch (Exception e) {
+
+            log.error("jwt 解密失败");
             return null;
         }
 

@@ -47,7 +47,7 @@ public class MyBatisPlusGenerator {
         dsConfig.setDbType(DbType.MYSQL)
                 .setDriverName("com.mysql.cj.jdbc.Driver")
                 //TODO TODO TODO TODO
-                .setUrl("jdbc:mysql://106.55.168.167:3306/dcloud_account?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai")
+                .setUrl("jdbc:mysql://106.55.168.167:3306/dcloud_link?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai")
                 .setUsername("root")
                 .setPassword("Teng19960106");
         //3. 策略配置globalConfiguration中
@@ -62,7 +62,7 @@ public class MyBatisPlusGenerator {
                 .setRestControllerStyle(true)
         // ⽣成的表, ⽀持多表⼀起⽣成，以数组形式填写
                 //TODO TODO TODO TODO
-                .setInclude("account","traffic","traffic_task");
+                .setInclude("link_group","short_link");
         //4. 包名策略配置
         PackageConfig pkConfig = new PackageConfig();
         pkConfig.setParent("com.yulin")

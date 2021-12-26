@@ -34,7 +34,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             return true;
         }
         String accessToken = request.getHeader("token");
-        if (StringUtils.isNoneBlank(accessToken)){
+        if (StringUtils.isBlank(accessToken)){
             accessToken = request.getParameter("token");
         }
 
@@ -64,7 +64,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             threadLocal.set(loginUser);
             return true;
         }
-
+        CommonUtil.sendJsonMessage(response,JsonData.buildResult(BizCodeEnum.ACCOUNT_UNLOGIN));
         return false;
     }
 
