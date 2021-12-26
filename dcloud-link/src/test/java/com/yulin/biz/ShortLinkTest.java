@@ -3,6 +3,8 @@ package com.yulin.biz;
 import com.google.common.hash.Hashing;
 import com.yulin.LinkApplication;
 import com.yulin.component.ShortLinkComponent;
+import com.yulin.manage.ShortLinkManager;
+import com.yulin.model.ShortLinkDO;
 import com.yulin.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -52,5 +54,25 @@ public class ShortLinkTest {
         }
     }
 
+    @Autowired
+    private ShortLinkManager shortLinkManager;
+    @Test
+    public void testSaveShort(){
+        Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            int num1 = random.nextInt(10);
+            int num2 = random.nextInt(10000000);
+            int num3 = random.nextInt(10000000);
+            String originalUrl = num1 + "yulin" + num2 + ".net" + num3;
+            String shortLinkCode = shortLinkComponent.createShortLinkCode(originalUrl);
+            ShortLinkDO shortLinkDO = new ShortLinkDO();
+            shortLinkDO.setCode(shortLinkCode);
+            shortLinkDO.setAccountNo(Long.valueOf(num3));
+            shortLinkDO.setSign(CommonUtil.MD5(originalUrl));
+            shortLinkDO.setDel(0);
+
+            shortLinkManager.addShortLink(shortLinkDO);
+        }
+    }
 
 }

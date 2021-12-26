@@ -70,7 +70,13 @@ public enum BizCodeEnum {
     /**
      * ⽂件相关
      */
-    FILE_UPLOAD_USER_IMG_FAIL(700101,"⽤户头像⽂件上传失败");
+    FILE_UPLOAD_USER_IMG_FAIL(700101,"⽤户头像⽂件上传失败"),
+
+    /**
+     * 数据库路由信息
+     */
+    DB_ROUTE_NOT_FOUND(800101,"数据库未找到");
+
     @Getter
     private String message;
     @Getter

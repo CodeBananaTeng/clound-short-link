@@ -1,5 +1,7 @@
 package com.yulin.component;
 
+import com.yulin.strategy.ShardingDBConfig;
+import com.yulin.strategy.ShardingTableConfig;
 import com.yulin.utils.CommonUtil;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +25,8 @@ public class ShortLinkComponent {
         long murmurHash32 = CommonUtil.murmurHash32(param);
         //进行进制转换
         String code = encodeToBase62(murmurHash32);
-        return code;
+        String shortLinkCode = ShardingDBConfig.getRandomDBPrefix() + code + ShardingTableConfig.getRandomTablePrefix();
+        return shortLinkCode;
     }
 
     /**
