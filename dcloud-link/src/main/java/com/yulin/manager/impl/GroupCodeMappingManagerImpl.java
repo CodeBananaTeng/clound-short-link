@@ -1,10 +1,10 @@
-package com.yulin.manage.impl;
+package com.yulin.manager.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yulin.enums.ShortLinkStateEnum;
-import com.yulin.manage.GroupCodeMappingManager;
+import com.yulin.manager.GroupCodeMappingManager;
 import com.yulin.mapper.GroupCodeMappingMapper;
 import com.yulin.model.GroupCodeMappingDO;
 import com.yulin.vo.GroupCodeMappingVO;

@@ -5,7 +5,7 @@ import com.yulin.controller.request.AccountRegisterRequest;
 import com.yulin.enums.AuthTypeEnum;
 import com.yulin.enums.BizCodeEnum;
 import com.yulin.enums.SengCodeEnum;
-import com.yulin.manage.AccountManage;
+import com.yulin.manager.AccountManage;
 import com.yulin.model.AccountDO;
 import com.yulin.model.LoginUser;
 import com.yulin.service.AccountService;

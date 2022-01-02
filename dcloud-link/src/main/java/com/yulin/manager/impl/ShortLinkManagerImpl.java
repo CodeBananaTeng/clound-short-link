@@ -1,7 +1,7 @@
-package com.yulin.manage.impl;
+package com.yulin.manager.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.yulin.manage.ShortLinkManager;
+import com.yulin.manager.ShortLinkManager;
 import com.yulin.mapper.ShortLinkMapper;
 import com.yulin.model.ShortLinkDO;
 import lombok.extern.slf4j.Slf4j;

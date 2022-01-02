@@ -1,6 +1,6 @@
 package com.yulin.service.impl;
 
-import com.yulin.manage.ShortLinkManager;
+import com.yulin.manager.ShortLinkManager;
 import com.yulin.model.ShortLinkDO;
 import com.yulin.service.ShortLinkService;
 import com.yulin.vo.ShortLinkVO;

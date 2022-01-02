@@ -1,7 +1,7 @@
-package com.yulin.manage.impl;
+package com.yulin.manager.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.yulin.manage.AccountManage;
+import com.yulin.manager.AccountManage;
 import com.yulin.mapper.AccountMapper;
 import com.yulin.model.AccountDO;
 import lombok.extern.slf4j.Slf4j;

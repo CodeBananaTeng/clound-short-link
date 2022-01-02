@@ -3,7 +3,7 @@ package com.yulin.biz;
 import com.google.common.hash.Hashing;
 import com.yulin.LinkApplication;
 import com.yulin.component.ShortLinkComponent;
-import com.yulin.manage.ShortLinkManager;
+import com.yulin.manager.ShortLinkManager;
 import com.yulin.model.ShortLinkDO;
 import com.yulin.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;

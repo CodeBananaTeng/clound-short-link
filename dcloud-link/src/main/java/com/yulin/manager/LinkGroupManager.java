@@ -1,4 +1,4 @@
-package com.yulin.manage;
+package com.yulin.manager;
 
 import com.yulin.model.LinkGroupDO;
 

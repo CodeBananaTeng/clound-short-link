@@ -1,7 +1,7 @@
-package com.yulin.manage.impl;
+package com.yulin.manager.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.yulin.manage.LinkGroupManager;
+import com.yulin.manager.LinkGroupManager;
 import com.yulin.mapper.LinkGroupMapper;
 import com.yulin.model.LinkGroupDO;
 import org.springframework.beans.factory.annotation.Autowired;

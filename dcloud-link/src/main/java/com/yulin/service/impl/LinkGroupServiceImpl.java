@@ -3,7 +3,7 @@ package com.yulin.service.impl;
 import com.yulin.controller.request.LinkGroupAddRequest;
 import com.yulin.controller.request.LinkGroupUpdateRequest;
 import com.yulin.interceptor.LoginInterceptor;
-import com.yulin.manage.LinkGroupManager;
+import com.yulin.manager.LinkGroupManager;
 import com.yulin.model.LinkGroupDO;
 import com.yulin.service.LinkGroupService;
 import com.yulin.vo.LinkGroupVO;
