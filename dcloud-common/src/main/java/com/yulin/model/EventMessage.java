@@ -36,7 +36,7 @@ public class EventMessage implements Serializable {
     /**
      * 账号
      */
-    private String accountNo;
+    private Long accountNo;
 
     /**
      * 消息体
