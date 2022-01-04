@@ -1,6 +1,7 @@
 package com.yulin.service;
 
 import com.yulin.controller.request.ShortLinkAddRequest;
+import com.yulin.model.EventMessage;
 import com.yulin.utils.JsonData;
 import com.yulin.vo.ShortLinkVO;
 
@@ -24,5 +25,12 @@ public interface ShortLinkService {
      * @return
      */
     JsonData createShortLink(ShortLinkAddRequest request);
+
+    /**
+     * 处理新增短链消息
+     * @param eventMessage
+     * @return
+     */
+    boolean handlerAddShortLink(EventMessage eventMessage);
 
 }
