@@ -8,13 +8,11 @@ import com.yulin.enums.EventMessageType;
 import com.yulin.enums.ShortLinkStateEnum;
 import com.yulin.interceptor.LoginInterceptor;
 import com.yulin.manager.DomainManager;
+import com.yulin.manager.GroupCodeMappingManager;
 import com.yulin.manager.LinkGroupManager;
 import com.yulin.manager.ShortLinkManager;
 import com.yulin.mapper.LinkGroupMapper;
-import com.yulin.model.DomainDO;
-import com.yulin.model.EventMessage;
-import com.yulin.model.LinkGroupDO;
-import com.yulin.model.ShortLinkDO;
+import com.yulin.model.*;
 import com.yulin.service.ShortLinkService;
 import com.yulin.utils.CommonUtil;
 import com.yulin.utils.IDUtil;
@@ -55,7 +53,8 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     @Autowired
     private ShortLinkComponent shortLinkComponent;
 
-
+    @Autowired
+    private GroupCodeMappingManager groupCodeMappingManager;
 
     @Override
     public ShortLinkVO parseShortLinkCode(String shortLinkCode) {
@@ -84,6 +83,14 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     }
 
     /**
+     * //⽣成⻓链摘要
+     * //判断短链域名是否合法
+     * //判断组名是否合法
+     * //⽣成短链码
+     * //加锁（加锁再查，不然查询后，加锁前有线程刚好新增）
+     * //查询短链码是否存在
+     * //构建短链mapping对象
+     * //保存数据库
      * 处理短链新增逻辑
      * @param eventMessage
      * @return
@@ -103,21 +110,47 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         String originalUrlDigest = CommonUtil.MD5(shortLinkAddRequest.getOriginalUrl());
         //生成短链码
         String shortLinkCode = shortLinkComponent.createShortLinkCode(shortLinkAddRequest.getOriginalUrl());
+        //TODO 加锁
+        //判断短链码是否被占用
+        ShortLinkDO shortLinkCodeDOInDB = shortLinkManager.findByShortLinkCode(shortLinkCode);
 
-        ShortLinkDO shortLinkDO = ShortLinkDO.builder()
-                .accountNo(accountNo)
-                .code(shortLinkCode)
-                .title(shortLinkAddRequest.getTitle())
-                .originalUrl(shortLinkAddRequest.getOriginalUrl())
-                .domain(domainDO.getValue())
-                .groupId(linkGroupDO.getId())
-                .expired(shortLinkAddRequest.getExpireTime())
-                .sign(originalUrlDigest)
-                .state(ShortLinkStateEnum.ACTIVE.name())
-                .del(0)
-                .build();
-        shortLinkManager.addShortLink(shortLinkDO);
-        return true;
+        if (shortLinkCodeDOInDB == null){
+            //是C端的
+            if (EventMessageType.SHORT_LINK_ADD_LINK.name().equalsIgnoreCase(messageType)){
+                ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                        .accountNo(accountNo)
+                        .code(shortLinkCode)
+                        .title(shortLinkAddRequest.getTitle())
+                        .originalUrl(shortLinkAddRequest.getOriginalUrl())
+                        .domain(domainDO.getValue())
+                        .groupId(linkGroupDO.getId())
+                        .expired(shortLinkAddRequest.getExpireTime())
+                        .sign(originalUrlDigest)
+                        .state(ShortLinkStateEnum.ACTIVE.name())
+                        .del(0)
+                        .build();
+                shortLinkManager.addShortLink(shortLinkDO);
+                return true;
+            }else if (EventMessageType.SHORT_LINK_ADD_MAPPING.name().equalsIgnoreCase(messageType)){
+                //进入B端处理逻辑
+                GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder()
+                        .accountNo(accountNo)
+                        .code(shortLinkCode)
+                        .title(shortLinkAddRequest.getTitle())
+                        .originalUrl(shortLinkAddRequest.getOriginalUrl())
+                        .domain(domainDO.getValue())
+                        .groupId(linkGroupDO.getId())
+                        .expired(shortLinkAddRequest.getExpireTime())
+                        .sign(originalUrlDigest)
+                        .state(ShortLinkStateEnum.ACTIVE.name())
+                        .del(0)
+                        .build();
+                groupCodeMappingManager.add(groupCodeMappingDO);
+                return true;
+            }
+        }
+        //
+        return false;
     }
 
     /**
