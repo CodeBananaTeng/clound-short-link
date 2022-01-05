@@ -80,4 +80,17 @@ public class ShortLinkTest {
         ShortLinkDO byShortLinkCode = shortLinkManager.findByShortLinkCode("11hAHEja");
         log.info(byShortLinkCode.toString());
     }
+
+    @Test
+    public void testGeneCode(){
+
+        for (int i = 0; i < 10; i++) {
+            String url = "https://yulin.net/download.html";
+
+            String shortLinkCode = shortLinkComponent.createShortLinkCode(url);
+            System.out.println(shortLinkCode);
+        }
+
+
+    }
 }

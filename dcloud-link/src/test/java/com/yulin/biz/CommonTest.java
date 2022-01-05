@@ -15,9 +15,9 @@ public class CommonTest {
     @Test
     public void testRandomDB(){
 
-        for (int i = 0; i < 20; i++) {
-            log.info(ShardingDBConfig.getRandomDBPrefix());
-        }
+//        for (int i = 0; i < 20; i++) {
+//            log.info(ShardingDBConfig.getRandomDBPrefix());
+//        }
 
     }
 

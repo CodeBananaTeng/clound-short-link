@@ -16,7 +16,6 @@ public class ShardingTableConfig {
      */
     private static final List<String> tablePrefix = new ArrayList<>();
 
-    private static final Random random = new Random();
 
     //配置启用哪些表的前缀
     static {
@@ -28,8 +27,9 @@ public class ShardingTableConfig {
      * 获取随机的前缀
      * @return
      */
-    public static String getRandomTablePrefix(){
-        int index = random.nextInt(tablePrefix.size());
+    public static String getRandomTablePrefix(String code){
+        int hashCode = code.hashCode();
+        int index = Math.abs(hashCode) % tablePrefix.size();
         return tablePrefix.get(index);
     }
 }
