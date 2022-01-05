@@ -174,4 +174,43 @@ public class CommonUtil {
         long murmurHash32 = Hashing.murmur3_32().hashUnencodedChars(param).padToLong();
         return murmurHash32;
     }
+
+    /**
+     * URL增加前缀
+     * @param url
+     * @return
+     */
+    public static String addUrlPrefix(String url){
+
+        return IDUtil.geneSnowFlakeID()+"&"+url;
+
+    }
+
+    /**
+     * 移除url前缀
+     * @param url
+     * @return
+     */
+    public static String removeUrlPrefix(String url){
+        String originalUrl = url.substring(url.indexOf("&") + 1);
+        return originalUrl;
+    }
+
+    /**
+     * 如果短链码重复的话就调用这个方法
+     * utl前缀的标号递增1
+     * 如果还是用雪花算法。则容易C端和B端不一致
+     *
+     * 123123123123&https://yulin.net/download.html
+     * @return
+     */
+    public static String addUrlPrefixVersion(String url){
+        String version = url.substring(0, url.indexOf("&"));
+        //获取原始地址
+        String originalUrl = url.substring(url.indexOf("&") + 1);
+        //新ID
+        Long newVersion = Long.parseLong(version);
+        return newVersion+"&"+originalUrl;
+    }
+
 }

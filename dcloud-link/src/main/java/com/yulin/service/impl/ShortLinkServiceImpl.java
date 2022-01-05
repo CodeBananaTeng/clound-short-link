@@ -72,6 +72,9 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
 
+        //发送消息之前的操作，将url处理为含有前缀的，这样的话同一个url生成的短链就会不同
+        String newUrl = CommonUtil.addUrlPrefix(request.getOriginalUrl());
+        request.setOriginalUrl(newUrl);
 
         EventMessage eventMessage = EventMessage.builder().accountNo(accountNo)
                 .content(JsonUtil.obj2Json(request))
