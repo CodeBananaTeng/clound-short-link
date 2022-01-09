@@ -3,6 +3,7 @@ package com.yulin.service.impl;
 import com.yulin.component.ShortLinkComponent;
 import com.yulin.config.RabbitMQConfig;
 import com.yulin.controller.request.ShortLinkAddRequest;
+import com.yulin.controller.request.ShortLinkPageRequest;
 import com.yulin.enums.DomainTypeEnum;
 import com.yulin.enums.EventMessageType;
 import com.yulin.enums.ShortLinkStateEnum;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -185,6 +187,18 @@ public class ShortLinkServiceImpl implements ShortLinkService {
             handlerAddShortLink(eventMessage);
         }
         return false;
+    }
+
+    /**
+     * 从B端查找，group_code_mapping表
+     * @param request
+     * @return
+     */
+    @Override
+    public Map<String, Object> apgeByGroupId(ShortLinkPageRequest request) {
+        LoginUser loginUser = LoginInterceptor.threadLocal.get();
+        Map<String, Object> result = groupCodeMappingManager.pageShortLinkByGroupId(request.getPage(), request.getSize(), loginUser.getAccountNo(), request.getGroupId());
+        return result;
     }
 
     /**

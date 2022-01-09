@@ -1,9 +1,12 @@
 package com.yulin.service;
 
 import com.yulin.controller.request.ShortLinkAddRequest;
+import com.yulin.controller.request.ShortLinkPageRequest;
 import com.yulin.model.EventMessage;
 import com.yulin.utils.JsonData;
 import com.yulin.vo.ShortLinkVO;
+
+import java.util.Map;
 
 /**
  * @Auther:LinuxTYL
@@ -32,5 +35,12 @@ public interface ShortLinkService {
      * @return
      */
     boolean handlerAddShortLink(EventMessage eventMessage);
+
+    /**
+     * 分页查找短链
+     * @param request
+     * @return
+     */
+    Map<String, Object> apgeByGroupId(ShortLinkPageRequest request);
 
 }
