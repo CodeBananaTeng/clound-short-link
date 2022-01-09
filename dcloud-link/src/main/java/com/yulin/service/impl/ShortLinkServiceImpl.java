@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Auther:LinuxTYL
@@ -118,6 +119,9 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
         //长链摘要
         String originalUrlDigest = CommonUtil.MD5(shortLinkAddRequest.getOriginalUrl());
+
+        //短链码重复标记
+        boolean duplicateCodeFlag = false;
         //生成短链码
         String shortLinkCode = shortLinkComponent.createShortLinkCode(shortLinkAddRequest.getOriginalUrl());
         //TODO 加锁
@@ -127,48 +131,59 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         Long result = redisTemplate.execute(new
                 DefaultRedisScript<>(script, Long.class), Arrays.asList(shortLinkCode), accountNo,100);
 
-        //判断短链码是否被占用
+        //加锁成功
+        if (result > 0){
 
             //是C端的
             if (EventMessageType.SHORT_LINK_ADD_LINK.name().equalsIgnoreCase(messageType)){
                 //判断短链码是否被占用
                 ShortLinkDO shortLinkCodeDOInDB = shortLinkManager.findByShortLinkCode(shortLinkCode);
-                ShortLinkDO shortLinkDO = ShortLinkDO.builder()
-                        .accountNo(accountNo)
-                        .code(shortLinkCode)
-                        .title(shortLinkAddRequest.getTitle())
-                        .originalUrl(shortLinkAddRequest.getOriginalUrl())
-                        .domain(domainDO.getValue())
-                        .groupId(linkGroupDO.getId())
-                        .expired(shortLinkAddRequest.getExpireTime())
-                        .sign(originalUrlDigest)
-                        .state(ShortLinkStateEnum.ACTIVE.name())
-                        .del(0)
-                        .build();
-                shortLinkManager.addShortLink(shortLinkDO);
-                return true;
+                if (shortLinkCodeDOInDB == null){
+                    ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                            .accountNo(accountNo).code(shortLinkCode)
+                            .title(shortLinkAddRequest.getTitle()).originalUrl(shortLinkAddRequest.getOriginalUrl())
+                            .domain(domainDO.getValue()).groupId(linkGroupDO.getId())
+                            .expired(shortLinkAddRequest.getExpireTime()).sign(originalUrlDigest)
+                            .state(ShortLinkStateEnum.ACTIVE.name()).del(0).build();
+                    shortLinkManager.addShortLink(shortLinkDO);
+                    return true;
+                }else {
+                    //短链码已经存在，需要重新生成
+                    log.error("C端短链码存在:{}",eventMessage);
+                    duplicateCodeFlag = true;
+                }
             }else if (EventMessageType.SHORT_LINK_ADD_MAPPING.name().equalsIgnoreCase(messageType)){
                 //判断B端短链码是否存在
                 GroupCodeMappingDO groupCodeMappingDOInDB = groupCodeMappingManager.findByCodeAndGroupId(shortLinkCode,linkGroupDO.getId(),accountNo);
-
-                //进入B端处理逻辑
-                GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder()
-                        .accountNo(accountNo)
-                        .code(shortLinkCode)
-                        .title(shortLinkAddRequest.getTitle())
-                        .originalUrl(shortLinkAddRequest.getOriginalUrl())
-                        .domain(domainDO.getValue())
-                        .groupId(linkGroupDO.getId())
-                        .expired(shortLinkAddRequest.getExpireTime())
-                        .sign(originalUrlDigest)
-                        .state(ShortLinkStateEnum.ACTIVE.name())
-                        .del(0)
-                        .build();
-                groupCodeMappingManager.add(groupCodeMappingDO);
-                return true;
+                if (groupCodeMappingDOInDB == null){
+                    //进入B端处理逻辑
+                    GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder()
+                            .accountNo(accountNo).code(shortLinkCode)
+                            .title(shortLinkAddRequest.getTitle()).originalUrl(shortLinkAddRequest.getOriginalUrl())
+                            .domain(domainDO.getValue()).groupId(linkGroupDO.getId())
+                            .expired(shortLinkAddRequest.getExpireTime()).sign(originalUrlDigest)
+                            .state(ShortLinkStateEnum.ACTIVE.name()).del(0).build();
+                    groupCodeMappingManager.add(groupCodeMappingDO);
+                    return true;
+                }else {
+                    //短链码已经存在，需要重新生成
+                    log.error("B端短链码存在:{}",eventMessage);
+                    duplicateCodeFlag = true;
+                }
             }
-
-        //
+        }else {
+            //加锁失败，自旋100ms再来调用，可能是锻短链码已经占用了，需要重新生成
+            log.error("加锁失败:{}",eventMessage);
+            try { TimeUnit.MILLISECONDS.sleep(100); } catch (InterruptedException e) { }
+            duplicateCodeFlag = true;
+        }
+        if (duplicateCodeFlag){
+            String newOriginalUrl = CommonUtil.addUrlPrefixVersion(shortLinkAddRequest.getOriginalUrl());
+            shortLinkAddRequest.setOriginalUrl(newOriginalUrl);
+            eventMessage.setContent(JsonUtil.obj2Json(shortLinkAddRequest));
+            log.warn("短链码保存失败重新生成:{}",eventMessage);
+            handlerAddShortLink(eventMessage);
+        }
         return false;
     }
 
