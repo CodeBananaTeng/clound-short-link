@@ -3,7 +3,9 @@ package com.yulin.service.impl;
 import com.yulin.component.ShortLinkComponent;
 import com.yulin.config.RabbitMQConfig;
 import com.yulin.controller.request.ShortLinkAddRequest;
+import com.yulin.controller.request.ShortLinkDelRequest;
 import com.yulin.controller.request.ShortLinkPageRequest;
+import com.yulin.controller.request.ShortLinkUpdateRequest;
 import com.yulin.enums.DomainTypeEnum;
 import com.yulin.enums.EventMessageType;
 import com.yulin.enums.ShortLinkStateEnum;
@@ -199,6 +201,36 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         LoginUser loginUser = LoginInterceptor.threadLocal.get();
         Map<String, Object> result = groupCodeMappingManager.pageShortLinkByGroupId(request.getPage(), request.getSize(), loginUser.getAccountNo(), request.getGroupId());
         return result;
+    }
+
+    @Override
+    public JsonData del(ShortLinkDelRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+
+
+
+        EventMessage eventMessage = EventMessage.builder().accountNo(accountNo)
+                .content(JsonUtil.obj2Json(request))
+                .messageId(IDUtil.geneSnowFlakeID().toString())
+                .eventMessageType(EventMessageType.SHORT_LINK_DEL.name())
+                .build();
+        //TODO
+        return JsonData.buildSuccess();
+    }
+
+    @Override
+    public JsonData update(ShortLinkUpdateRequest request) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+
+
+
+        EventMessage eventMessage = EventMessage.builder().accountNo(accountNo)
+                .content(JsonUtil.obj2Json(request))
+                .messageId(IDUtil.geneSnowFlakeID().toString())
+                .eventMessageType(EventMessageType.SHORT_LINK_UPDATE.name())
+                .build();
+        //TODO
+        return JsonData.buildSuccess();
     }
 
     /**

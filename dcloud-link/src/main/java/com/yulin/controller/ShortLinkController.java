@@ -2,7 +2,9 @@ package com.yulin.controller;
 
 
 import com.yulin.controller.request.ShortLinkAddRequest;
+import com.yulin.controller.request.ShortLinkDelRequest;
 import com.yulin.controller.request.ShortLinkPageRequest;
+import com.yulin.controller.request.ShortLinkUpdateRequest;
 import com.yulin.service.ShortLinkService;
 import com.yulin.utils.JsonData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,23 @@ public class ShortLinkController {
     public JsonData pageByGroupId(@RequestBody ShortLinkPageRequest request){
         Map<String ,Object> result = shortLinkService.apgeByGroupId(request);
         return JsonData.buildSuccess(result);
+    }
+
+    /**
+     * 删除短链码
+     * @param request
+     * @return
+     */
+    @PostMapping("del")
+    public JsonData del(@RequestBody ShortLinkDelRequest request){
+        JsonData jsonData = shortLinkService.del(request);
+        return jsonData;
+    }
+
+    @PostMapping("update")
+    public JsonData update(@RequestBody ShortLinkUpdateRequest request){
+        JsonData jsonData = shortLinkService.update(request);
+        return jsonData;
     }
 
 }

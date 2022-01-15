@@ -1,7 +1,9 @@
 package com.yulin.service;
 
 import com.yulin.controller.request.ShortLinkAddRequest;
+import com.yulin.controller.request.ShortLinkDelRequest;
 import com.yulin.controller.request.ShortLinkPageRequest;
+import com.yulin.controller.request.ShortLinkUpdateRequest;
 import com.yulin.model.EventMessage;
 import com.yulin.utils.JsonData;
 import com.yulin.vo.ShortLinkVO;
@@ -42,5 +44,19 @@ public interface ShortLinkService {
      * @return
      */
     Map<String, Object> apgeByGroupId(ShortLinkPageRequest request);
+
+    /**
+     * 删除短链
+     * @param request
+     * @return
+     */
+    JsonData del(ShortLinkDelRequest request);
+
+    /**
+     * 更新短链信息
+     * @param request
+     * @return
+     */
+    JsonData update(ShortLinkUpdateRequest request);
 
 }
