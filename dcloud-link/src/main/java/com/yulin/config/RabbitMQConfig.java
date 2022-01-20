@@ -95,6 +95,7 @@ public class RabbitMQConfig {
     }
 
 
+
     //删除短链相关配置====================================
     /**
      * 删除短链 队列
@@ -152,6 +153,68 @@ public class RabbitMQConfig {
     @Bean
     public Queue shortLinkDelMappingQueue(){
         return new Queue(shortLinkDelMappingQueue,true,false,false);
+    }
+
+
+
+
+    //更新短链相关配置====================================
+    /**
+     * 更新短链 队列
+     */
+    private String shortLinkUpdateLinkQueue="short_link.update.link.queue";
+
+    /**
+     * 更新短链映射 队列
+     */
+    private String shortLinkUpdateMappingQueue="short_link.update.mapping.queue";
+
+    /**
+     * 更新短链具体的routingKey,【发送消息使⽤】
+     */
+    private String shortLinkUpdateRoutingKey="short_link.update.link.mapping.routing.key";
+
+    /**
+     * topic类型的binding key，⽤于绑定队列和交换机，是⽤
+     于 link 消费者
+     */
+    private String shortLinkUpdateLinkBindingKey="short_link.update.link.*.routing.key";
+    /**
+     * topic类型的binding key，⽤于绑定队列和交换机，是⽤
+     于 mapping 消费者
+     */
+    private String shortLinkUpdateMappingBindingKey="short_link.update.*.mapping.routing.key";
+
+    /**
+     * 更新短链api队列和交换机的绑定关系建⽴
+     */
+    @Bean
+    public Binding shortLinkUpdateApiBinding(){
+        return new Binding(shortLinkUpdateLinkQueue,Binding.DestinationType.QUEUE, shortLinkEventExchange,shortLinkUpdateLinkBindingKey,null);
+    }
+
+    /**
+     * 更新短链mapping队列和交换机的绑定关系建⽴
+     */
+    @Bean
+    public Binding shortLinkUpdateMappingBinding(){
+        return new Binding(shortLinkUpdateMappingQueue,Binding.DestinationType.QUEUE, shortLinkEventExchange,shortLinkUpdateMappingBindingKey,null);
+    }
+
+    /**
+     * 更新短链api 普通队列，⽤于被监听
+     */
+    @Bean
+    public Queue shortLinkUpdateLinkQueue(){
+        return new Queue(shortLinkUpdateLinkQueue,true,false,false);
+    }
+
+    /**
+     * 删除短链mapping 普通队列，⽤于被监听
+     */
+    @Bean
+    public Queue shortLinkUpdateMappingQueue(){
+        return new Queue(shortLinkUpdateMappingQueue,true,false,false);
     }
 
 }
