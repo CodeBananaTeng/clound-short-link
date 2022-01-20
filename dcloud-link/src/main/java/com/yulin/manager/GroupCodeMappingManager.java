@@ -29,13 +29,11 @@ public interface GroupCodeMappingManager {
     int add(GroupCodeMappingDO groupCodeMappingDO);
 
     /**
-     * 根据短链码删除
-     * @param shortLinkedCode
-     * @param accountNo
-     * @param groupId
+     * 删除
+     * @param groupCodeMappingDO
      * @return
      */
-    int del(String shortLinkedCode,Long accountNo,Long groupId);
+    int del(GroupCodeMappingDO groupCodeMappingDO);
 
     /**
      * 分页查找

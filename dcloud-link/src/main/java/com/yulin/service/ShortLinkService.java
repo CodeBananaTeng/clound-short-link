@@ -66,4 +66,11 @@ public interface ShortLinkService {
      * @return
      */
     boolean handleUpdateShortLink(EventMessage eventMessage);
+
+    /**
+     * 删除短链
+     * @param eventMessage
+     * @return
+     */
+    boolean handleDelShortLink(EventMessage eventMessage);
 }

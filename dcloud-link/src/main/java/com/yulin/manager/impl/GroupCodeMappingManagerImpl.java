@@ -46,10 +46,12 @@ public class GroupCodeMappingManagerImpl implements GroupCodeMappingManager {
     }
 
     @Override
-    public int del(String shortLinkedCode, Long accountNo, Long groupId) {
+    public int del(GroupCodeMappingDO groupCodeMappingDO) {
         int rows = groupCodeMappingMapper.update(null, new UpdateWrapper<GroupCodeMappingDO>()
-                .eq("code", shortLinkedCode)
-                .eq("group_id", groupId)
+                .eq("id", groupCodeMappingDO.getId())
+                .eq("account_no",groupCodeMappingDO.getAccountNo())
+                .eq("group_id",groupCodeMappingDO.getGroupId())
+
                 .set("del", 1));
         return rows;
     }

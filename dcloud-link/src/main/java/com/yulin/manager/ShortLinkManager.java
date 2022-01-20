@@ -25,11 +25,10 @@ public interface ShortLinkManager {
 
     /**
      * 删除
-     * @param shortLinkCode
-     * @param accountNo
+     * @param shortLinkDO
      * @return
      */
-    int deli(String shortLinkCode ,Long accountNo);
+    int del(ShortLinkDO shortLinkDO);
 
     /**
      * 更新
