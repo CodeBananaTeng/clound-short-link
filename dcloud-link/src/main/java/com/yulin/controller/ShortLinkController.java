@@ -62,6 +62,11 @@ public class ShortLinkController {
         return jsonData;
     }
 
+    /**
+     * 更新短链
+     * @param request
+     * @return
+     */
     @PostMapping("update")
     public JsonData update(@RequestBody ShortLinkUpdateRequest request){
         JsonData jsonData = shortLinkService.update(request);

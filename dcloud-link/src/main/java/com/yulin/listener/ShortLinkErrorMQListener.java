@@ -1,8 +1,6 @@
 package com.yulin.listener;
 
 import com.rabbitmq.client.Channel;
-import com.yulin.enums.BizCodeEnum;
-import com.yulin.exception.BizException;
 import com.yulin.model.EventMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -20,7 +18,7 @@ import java.io.IOException;
 @Component
 @Slf4j
 @RabbitListener(queues = "short_link.error.queue")
-public class ShortLinErrorMQListener {
+public class ShortLinkErrorMQListener {
 
     @RabbitHandler
     public void shortLinkHandler(EventMessage eventMessage, Message message, Channel channel) throws IOException {
