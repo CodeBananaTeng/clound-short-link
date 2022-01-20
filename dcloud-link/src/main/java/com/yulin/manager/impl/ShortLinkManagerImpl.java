@@ -1,6 +1,7 @@
 package com.yulin.manager.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.yulin.manager.ShortLinkManager;
 import com.yulin.mapper.ShortLinkMapper;
 import com.yulin.model.ShortLinkDO;
@@ -37,6 +38,17 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
         shortLinkDO.setDel(1);
 
         int rows = shortLinkMapper.update(shortLinkDO, new QueryWrapper<ShortLinkDO>().eq("code", shortLinkCode).eq("account_no", accountNo));
+        return rows;
+    }
+
+    @Override
+    public int update(ShortLinkDO shortLinkDO) {
+        int rows = shortLinkMapper.update(null, new UpdateWrapper<ShortLinkDO>()
+                .eq("code", shortLinkDO.getCode())
+                .eq("del", 0)
+
+                .set("title", shortLinkDO.getTitle())
+                .set("domain", shortLinkDO.getDomain()));
         return rows;
     }
 }

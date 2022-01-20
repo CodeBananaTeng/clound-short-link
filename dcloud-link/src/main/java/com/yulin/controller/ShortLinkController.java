@@ -47,7 +47,7 @@ public class ShortLinkController {
      */
     @RequestMapping("page")
     public JsonData pageByGroupId(@RequestBody ShortLinkPageRequest request){
-        Map<String ,Object> result = shortLinkService.apgeByGroupId(request);
+        Map<String ,Object> result = shortLinkService.pageByGroupId(request);
         return JsonData.buildSuccess(result);
     }
 

@@ -33,7 +33,7 @@ public class ShortLinkAddLinkMQListener {
         log.info("监听到消息ShortLinkAddLinkMQListener message消息内容:{}",message);
         try {
             eventMessage.setEventMessageType(EventMessageType.SHORT_LINK_ADD_LINK.name());
-            shortLinkService.handlerAddShortLink(eventMessage);
+            shortLinkService.handleAddShortLink(eventMessage);
             //TODO 处理业务逻辑
 
         }catch (Exception e){
@@ -42,8 +42,6 @@ public class ShortLinkAddLinkMQListener {
             throw new BizException(BizCodeEnum.MQ_CONSUME_EXCEPTION);
         }
         log.info("消费成功:{}",eventMessage);
-        //确认消息消费成功
-        //channel.basicAck(tag,false);
     }
 
 }

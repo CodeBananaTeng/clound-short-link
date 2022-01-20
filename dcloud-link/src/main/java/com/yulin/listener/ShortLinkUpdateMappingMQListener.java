@@ -34,7 +34,8 @@ public class ShortLinkUpdateMappingMQListener {
         log.info("监听到消息ShortLinkUpdateMappingMQListener message消息内容:{}",message);
         try {
             eventMessage.setEventMessageType(EventMessageType.SHORT_LINK_UPDATE_MAPPING.name());
-            //TODO 处理业务逻辑
+            //进入业务逻辑B端更新短链
+            shortLinkService.handleUpdateShortLink(eventMessage);
         }catch (Exception e){
             log.error("消费失败:{}",eventMessage);
             throw new BizException(BizCodeEnum.MQ_CONSUME_EXCEPTION);

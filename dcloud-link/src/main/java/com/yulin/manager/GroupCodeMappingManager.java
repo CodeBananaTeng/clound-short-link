@@ -65,4 +65,11 @@ public interface GroupCodeMappingManager {
      * @return
      */
     GroupCodeMappingDO findByCodeAndGroupId(String shortLinkCode, Long groupId, Long accountNo);
+
+    /**
+     * 更新
+     * @param groupCodeMappingDO
+     * @return
+     */
+    int update(GroupCodeMappingDO groupCodeMappingDO);
 }

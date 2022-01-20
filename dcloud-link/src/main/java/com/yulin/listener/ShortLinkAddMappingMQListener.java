@@ -32,7 +32,7 @@ public class ShortLinkAddMappingMQListener {
     public void shortLinkHandler(EventMessage eventMessage, Message message, Channel channel) throws IOException {
         log.info("监听到消息ShortLinkAddMappingMQListener message消息内容:{}",message);
         eventMessage.setEventMessageType(EventMessageType.SHORT_LINK_ADD_MAPPING.name());
-        shortLinkService.handlerAddShortLink(eventMessage);
+        shortLinkService.handleAddShortLink(eventMessage);
         try {
             //TODO 处理业务逻辑
         }catch (Exception e){

@@ -14,7 +14,6 @@ import com.yulin.manager.DomainManager;
 import com.yulin.manager.GroupCodeMappingManager;
 import com.yulin.manager.LinkGroupManager;
 import com.yulin.manager.ShortLinkManager;
-import com.yulin.mapper.LinkGroupMapper;
 import com.yulin.model.*;
 import com.yulin.service.ShortLinkService;
 import com.yulin.utils.CommonUtil;
@@ -111,7 +110,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
      * @return
      */
     @Override
-    public boolean handlerAddShortLink(EventMessage eventMessage) {
+    public boolean handleAddShortLink(EventMessage eventMessage) {
         Long accountNo = eventMessage.getAccountNo();
         String messageType = eventMessage.getEventMessageType();
 
@@ -186,7 +185,41 @@ public class ShortLinkServiceImpl implements ShortLinkService {
             shortLinkAddRequest.setOriginalUrl(newOriginalUrl);
             eventMessage.setContent(JsonUtil.obj2Json(shortLinkAddRequest));
             log.warn("短链码保存失败重新生成:{}",eventMessage);
-            handlerAddShortLink(eventMessage);
+            handleAddShortLink(eventMessage);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean handleUpdateShortLink(EventMessage eventMessage) {
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        String messageType = eventMessage.getEventMessageType();
+        ShortLinkUpdateRequest request = JsonUtil.json2Obj(eventMessage.getContent(), ShortLinkUpdateRequest.class);
+        //校验短链域名
+        DomainDO domainDO = checkDomain(request.getDomainType(), request.getDomainId(), accountNo);
+        if (EventMessageType.SHORT_LINK_UPDATE_LINK.name().equalsIgnoreCase(messageType)){
+            //此处进入C端的逻辑
+            ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                    .code(request.getCode())
+                    .title(request.getTitle())
+                    .domain(domainDO.getValue())
+                    .build();
+
+            int rows = shortLinkManager.update(shortLinkDO);
+            log.debug("更新C端短链rows:{}",rows);
+            return true;
+        }else if (EventMessageType.SHORT_LINK_UPDATE_MAPPING.name().equalsIgnoreCase(messageType)){
+            //此处进入B端的校验逻辑
+            GroupCodeMappingDO groupCodeMappingDO = GroupCodeMappingDO.builder()
+                    .id(request.getMappingId())
+                    .groupId(request.getGroupId())
+                    .accountNo(accountNo)
+                    .title(request.getTitle())
+                    .domain(domainDO.getValue())
+                    .build();
+            int rows = groupCodeMappingManager.update(groupCodeMappingDO);
+            log.debug("更新B端短链rows:{}",rows);
+            return true;
         }
         return false;
     }
@@ -197,7 +230,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
      * @return
      */
     @Override
-    public Map<String, Object> apgeByGroupId(ShortLinkPageRequest request) {
+    public Map<String, Object> pageByGroupId(ShortLinkPageRequest request) {
         LoginUser loginUser = LoginInterceptor.threadLocal.get();
         Map<String, Object> result = groupCodeMappingManager.pageShortLinkByGroupId(request.getPage(), request.getSize(), loginUser.getAccountNo(), request.getGroupId());
         return result;
