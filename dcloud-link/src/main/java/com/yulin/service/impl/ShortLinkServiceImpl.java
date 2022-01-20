@@ -200,6 +200,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         if (EventMessageType.SHORT_LINK_UPDATE_LINK.name().equalsIgnoreCase(messageType)){
             //此处进入C端的逻辑
             ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                    .accountNo(accountNo)
                     .code(request.getCode())
                     .title(request.getTitle())
                     .domain(domainDO.getValue())
