@@ -192,7 +192,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
     @Override
     public boolean handleUpdateShortLink(EventMessage eventMessage) {
-        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        long accountNo = eventMessage.getAccountNo();
         String messageType = eventMessage.getEventMessageType();
         ShortLinkUpdateRequest request = JsonUtil.json2Obj(eventMessage.getContent(), ShortLinkUpdateRequest.class);
         //校验短链域名
