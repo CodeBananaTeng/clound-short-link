@@ -36,6 +36,7 @@ public class ShortLinkManagerImpl implements ShortLinkManager {
 
         int rows = shortLinkMapper.update(null, new UpdateWrapper<ShortLinkDO>()
                 .eq("code", shortLinkDO.getCode())
+                .eq("account_no",shortLinkDO.getAccountNo())
                 .set("del",1));
         return rows;
     }

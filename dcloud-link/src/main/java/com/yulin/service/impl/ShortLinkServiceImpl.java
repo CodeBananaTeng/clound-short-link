@@ -233,6 +233,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         if (EventMessageType.SHORT_LINK_DEL_LINK.name().equalsIgnoreCase(messageType)){
             //此处进入C端的处理逻辑
             ShortLinkDO shortLinkDO = ShortLinkDO.builder()
+                    .accountNo(accountNo)
                     .code(request.getCode())
                     .build();
             int rows = shortLinkManager.del(shortLinkDO);
