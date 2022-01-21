@@ -68,6 +68,7 @@ public class LinkApiController {
                 } else {
                     //不能跳转
                     response.setStatus(HttpStatus.NOT_FOUND.value());
+
                 }
             }
         }catch (Exception e){
