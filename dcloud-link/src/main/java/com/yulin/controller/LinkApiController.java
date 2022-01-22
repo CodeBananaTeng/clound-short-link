@@ -85,7 +85,6 @@ public class LinkApiController {
     private static boolean isVisitable(ShortLinkVO shortLinkVO){
         if (shortLinkVO.getExpired().getTime() == -1) {
             if (ShortLinkStateEnum.ACTIVE.name().equalsIgnoreCase(shortLinkVO.getState())) {
-
             }
         } else if (shortLinkVO != null && shortLinkVO.getExpired().getTime() > CommonUtil.getCurrentTimestamp()) {
             if (ShortLinkStateEnum.ACTIVE.name().equalsIgnoreCase(shortLinkVO.getState())) {
