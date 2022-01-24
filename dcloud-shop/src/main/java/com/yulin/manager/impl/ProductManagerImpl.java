@@ -6,7 +6,6 @@ import com.yulin.mapper.ProductMapper;
 import com.yulin.model.ProductDO;
 import groovy.util.logging.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
