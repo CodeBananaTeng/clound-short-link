@@ -31,9 +31,9 @@ public class SnowFlakeWordIdConfig {
 
             String workId = Math.abs(hostAddressIp.hashCode()) % 1024+"";
 
-            System.setProperty("workId",workId);
+            System.setProperty("workerId",workId);
 
-            log.info("workId:{}",workId);
+            log.info("workerId:{}",workId);
 
         } catch (UnknownHostException e) {
             e.printStackTrace();

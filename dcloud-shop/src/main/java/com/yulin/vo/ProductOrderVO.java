@@ -1,13 +1,14 @@
-package com.yulin.model;
+package com.yulin.vo;
 
-import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import lombok.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * <p>
@@ -19,15 +20,9 @@ import lombok.*;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("product_order")
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProductOrderDO implements Serializable {
+public class ProductOrderVO implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
-      @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
