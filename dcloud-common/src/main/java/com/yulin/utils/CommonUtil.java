@@ -149,6 +149,7 @@ public class CommonUtil {
         }
         return saltString.toString();
     }
+
     /**
      * 响应json数据给前端
      *
@@ -156,10 +157,26 @@ public class CommonUtil {
      * @param obj
      */
     public static void sendJsonMessage(HttpServletResponse response, Object obj) {
-        response.setContentType("application/json;charset=utf-8");
+        response.setContentType("application/json; charset=utf-8");
         try (PrintWriter writer = response.getWriter()) {
             writer.print(JsonUtil.obj2Json(obj));
             response.flushBuffer();
+        } catch (IOException e) {
+            log.warn("响应json数据给前端异常:{}",e);
+        }
+    }
+
+    /**
+     * 响应html数据给前端
+     * 支付宝支付的jsondata的内容就是HTML的内容
+     * @param response
+     * @param jsonData
+     */
+    public static void sendHtmlMessage(HttpServletResponse response, JsonData jsonData) {
+        response.setContentType("text/html; charset=utf-8");
+        try (PrintWriter writer = response.getWriter()) {
+           writer.write(jsonData.getData().toString());
+           writer.flush();
         } catch (IOException e) {
             log.warn("响应json数据给前端异常:{}",e);
         }
