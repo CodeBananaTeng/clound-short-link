@@ -39,7 +39,8 @@ public class ProductOrderManagerImpl implements ProductOrderManager {
     public ProductOrderDO findByOutTradeNoAndAccountNo(String outTradeNo, Long accountNo) {
         ProductOrderDO productOrderDO = productOrderMapper.selectOne(new QueryWrapper<ProductOrderDO>()
                 .eq("out_trade_no", outTradeNo)
-                .eq("account_no", accountNo));
+                .eq("account_no", accountNo)
+                .eq("del",0));
 
         return productOrderDO;
     }
@@ -59,13 +60,16 @@ public class ProductOrderManagerImpl implements ProductOrderManager {
     public Map<String, Object> page(int page, int size, Long accountNo, String state) {
         Page<ProductOrderDO> pageInfo = new Page<>(page,size);
         IPage<ProductOrderDO> orderDOIPage;
-        if (StringUtils.isNoneBlank(state)){
+        //是否按照状态查询
+        if (StringUtils.isBlank(state)){
             orderDOIPage = productOrderMapper.selectPage(pageInfo, new QueryWrapper<ProductOrderDO>()
-                    .eq("account_no", accountNo));
+                    .eq("account_no", accountNo)
+                    .eq("del",0));
         }else {
             orderDOIPage = productOrderMapper.selectPage(pageInfo, new QueryWrapper<ProductOrderDO>()
                     .eq("account_no", accountNo)
-                    .eq("state",state));
+                    .eq("state",state)
+                    .eq("del",0));
         }
         List<ProductOrderDO> orderDOIPageRecords = orderDOIPage.getRecords();
         List<ProductOrderVO> productOrderVOList = orderDOIPageRecords.stream().map(obj -> {
@@ -78,5 +82,14 @@ public class ProductOrderManagerImpl implements ProductOrderManager {
         pageMap.put("total_page",orderDOIPage.getPages());
         pageMap.put("current_data",productOrderVOList);
         return pageMap;
+    }
+
+    @Override
+    public int del(Long productOrderId, Long accountNo) {
+        int rows = productOrderMapper.update(null, new UpdateWrapper<ProductOrderDO>()
+                .eq("id", productOrderId)
+                .eq("account_no", accountNo)
+                .set("del", 1));
+        return rows;
     }
 }
