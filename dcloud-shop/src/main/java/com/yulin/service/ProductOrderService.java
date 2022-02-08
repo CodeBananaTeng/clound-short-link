@@ -1,6 +1,7 @@
 package com.yulin.service;
 
-import com.yulin.request.ConfirmOrderRequest;
+import com.yulin.controller.request.ConfirmOrderRequest;
+import com.yulin.controller.request.ProductOrderPageRequest;
 import com.yulin.utils.JsonData;
 
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public interface ProductOrderService {
 
-    Map<String, Object> page(int page, int size, String state);
+    Map<String, Object> page(ProductOrderPageRequest productOrderPageRequest);
 
     /**
      * 查询订单接口

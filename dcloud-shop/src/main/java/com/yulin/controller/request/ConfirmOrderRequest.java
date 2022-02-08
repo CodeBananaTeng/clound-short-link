@@ -1,4 +1,4 @@
-package com.yulin.request;
+package com.yulin.controller.request;
 
 import lombok.Data;
 

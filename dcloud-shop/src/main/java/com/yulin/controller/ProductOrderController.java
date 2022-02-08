@@ -1,20 +1,26 @@
 package com.yulin.controller;
 
 
+import com.yulin.annotation.RepeatSubmit;
+import com.yulin.constant.RedisKey;
+import com.yulin.controller.request.ProductOrderPageRequest;
 import com.yulin.enums.BizCodeEnum;
 import com.yulin.enums.ClientTypeEnum;
 import com.yulin.enums.ProductOrderPayTypeEnum;
-import com.yulin.request.ConfirmOrderRequest;
+import com.yulin.interceptor.LoginInterceptor;
+import com.yulin.controller.request.ConfirmOrderRequest;
 import com.yulin.service.ProductOrderService;
 import com.yulin.utils.CommonUtil;
 import com.yulin.utils.JsonData;
 import groovy.util.logging.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -32,19 +38,32 @@ public class ProductOrderController {
     @Autowired
     private ProductOrderService productOrderService;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    /**
+     * 下单前获取令牌用于防重提交
+     * @return
+     */
+    @GetMapping("token")
+    public JsonData getOrderToken(){
+        long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
+        String token = CommonUtil.getStringNumRandom(32);
+        String key = String.format(RedisKey.SUBMIT_ORDER_TOKEN_KEY,accountNo,token);
+
+        //令牌有效时间30分钟
+        redisTemplate.opsForValue().set(key, String.valueOf(Thread.currentThread().getId()),30, TimeUnit.MINUTES);
+
+        return JsonData.buildSuccess(token);
+    }
     /**
      * 分页
      * @return
      */
-    @GetMapping("page")
-    public JsonData page(
-            @RequestParam(value = "page",defaultValue = "1") int page,
-            @RequestParam(value = "size",defaultValue = "10") int size,
-            @RequestParam(value = "state",required = false) String state
-
-            ){
-
-        Map<String,Object> pageResult = productOrderService.page(page,size,state);
+    @PostMapping("page")
+    @RepeatSubmit(limitType = RepeatSubmit.Type.TOKEN)
+    public JsonData page(@RequestBody ProductOrderPageRequest orderPageRequest){
+        Map<String,Object> pageResult = productOrderService.page(orderPageRequest);
         return JsonData.buildSuccess(pageResult);
     }
 

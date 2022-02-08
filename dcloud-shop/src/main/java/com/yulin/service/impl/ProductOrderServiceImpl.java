@@ -1,6 +1,7 @@
 package com.yulin.service.impl;
 
 import com.yulin.constant.TimeConstant;
+import com.yulin.controller.request.ProductOrderPageRequest;
 import com.yulin.enums.BillTypeEnum;
 import com.yulin.enums.BizCodeEnum;
 import com.yulin.enums.ProductOrderPayTypeEnum;
@@ -12,7 +13,7 @@ import com.yulin.manager.ProductOrderManager;
 import com.yulin.model.LoginUser;
 import com.yulin.model.ProductDO;
 import com.yulin.model.ProductOrderDO;
-import com.yulin.request.ConfirmOrderRequest;
+import com.yulin.controller.request.ConfirmOrderRequest;
 import com.yulin.service.ProductOrderService;
 import com.yulin.utils.CommonUtil;
 import com.yulin.utils.JsonData;
@@ -43,9 +44,9 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     private ProductManager productManager;
 
     @Override
-    public Map<String, Object> page(int page, int size, String state) {
+    public Map<String, Object> page(ProductOrderPageRequest orderPageRequest) {
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
-        Map<String, Object> pageResult = productOrderManager.page(page, size, accountNo, state);
+        Map<String, Object> pageResult = productOrderManager.page(orderPageRequest.getPage(), orderPageRequest.getSize(), accountNo, orderPageRequest.getState());
         return pageResult;
     }
 
