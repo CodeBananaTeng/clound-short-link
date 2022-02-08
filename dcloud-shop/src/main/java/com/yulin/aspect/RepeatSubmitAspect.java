@@ -5,12 +5,14 @@ import com.yulin.constant.RedisKey;
 import com.yulin.enums.BizCodeEnum;
 import com.yulin.exception.BizException;
 import com.yulin.interceptor.LoginInterceptor;
+import com.yulin.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -76,6 +80,18 @@ public class RepeatSubmitAspect {
 
         if (type.equalsIgnoreCase(RepeatSubmit.Type.PARAM.name())){
             //方式一，参数形式防重提交 TODO
+            long lockTime = repeatSubmit.lockTime();
+
+            String ipAddr = CommonUtil.getIpAddr(request);
+            MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+            Method method = methodSignature.getMethod();
+            String className = method.getDeclaringClass().getName();
+            //根据用户请求的地址，方法，类名，用户Id来创建key
+            String key = String.format("%s-%s-%s-s%",ipAddr,className,method,accountNo);
+
+            //加锁 TODO
+            res = redisTemplate.opsForValue().setIfAbsent(key,"1",lockTime, TimeUnit.SECONDS);
+
         }else {
             //方式二，令牌形式防重提交
             String requestToken = request.getHeader("request-token");
