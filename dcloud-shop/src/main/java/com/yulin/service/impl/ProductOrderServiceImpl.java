@@ -21,6 +21,7 @@ import com.yulin.vo.PayInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -74,6 +75,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
      * @return
      */
     @Override
+    @Transactional
     public JsonData confirmOrder(ConfirmOrderRequest orderRequest) {
         LoginUser loginUser = LoginInterceptor.threadLocal.get();
         String orderOutTradeNo = CommonUtil.getStringNumRandom(32);
