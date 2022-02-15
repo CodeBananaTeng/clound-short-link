@@ -92,7 +92,7 @@ public class RepeatSubmitAspect {
             Method method = methodSignature.getMethod();
             String className = method.getDeclaringClass().getName();
             //根据用户请求的地址，方法，类名，用户Id来创建key
-            String key = String.format("%s-%s-%s-s%",ipAddr,className,method,accountNo);
+            String key = String.format("%s-%s-%s-%s",ipAddr,className,method,accountNo);
 
             //加锁 TODO
             //res = redisTemplate.opsForValue().setIfAbsent(key,"1",lockTime, TimeUnit.SECONDS);
@@ -105,7 +105,7 @@ public class RepeatSubmitAspect {
             if (StringUtils.isBlank(requestToken)){
                 throw new BizException(BizCodeEnum.ORDER_CONFIRM_TOKEN_EQUAL_FAIL);
             }
-            String redisKey = String.format(RedisKey.SUBMIT_ORDER_TOKEN_KEY, accountNo, requestToken);
+            String redisKey = "order-server:repeat_submit:"+CommonUtil.MD5(String.format(RedisKey.SUBMIT_ORDER_TOKEN_KEY, accountNo, requestToken)) ;
 
             /**
              * 提交表单的token key
@@ -115,8 +115,9 @@ public class RepeatSubmitAspect {
             res = redisTemplate.delete(redisKey);
         }
         if (!res){
-            //订单恶意重复提交
+            //订单恶意重复提交 此处就是做一个防重提交的处理可以使抛出异常
             log.error("订单请求重复提交");
+            return null;
         }
         log.info("环绕通知执行前");
         Object obj = joinPoint.proceed();
