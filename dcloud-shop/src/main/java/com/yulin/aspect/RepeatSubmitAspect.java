@@ -13,6 +13,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -37,6 +39,9 @@ public class RepeatSubmitAspect {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     /**
      *
@@ -90,7 +95,9 @@ public class RepeatSubmitAspect {
             String key = String.format("%s-%s-%s-s%",ipAddr,className,method,accountNo);
 
             //加锁 TODO
-            res = redisTemplate.opsForValue().setIfAbsent(key,"1",lockTime, TimeUnit.SECONDS);
+            //res = redisTemplate.opsForValue().setIfAbsent(key,"1",lockTime, TimeUnit.SECONDS);
+            RLock lock = redissonClient.getLock(key);
+            res = lock.tryLock(0, lockTime, TimeUnit.SECONDS);
 
         }else {
             //方式二，令牌形式防重提交
@@ -109,7 +116,7 @@ public class RepeatSubmitAspect {
         }
         if (!res){
             //订单恶意重复提交
-            throw new BizException(BizCodeEnum.ORDER_CONFIRM_REPEAT);
+            log.error("订单请求重复提交");
         }
         log.info("环绕通知执行前");
         Object obj = joinPoint.proceed();
