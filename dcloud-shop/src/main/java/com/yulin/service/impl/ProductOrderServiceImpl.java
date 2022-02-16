@@ -1,15 +1,14 @@
 package com.yulin.service.impl;
 
+import com.yulin.config.RabbitMQConfig;
 import com.yulin.constant.TimeConstant;
 import com.yulin.controller.request.ProductOrderPageRequest;
-import com.yulin.enums.BillTypeEnum;
-import com.yulin.enums.BizCodeEnum;
-import com.yulin.enums.ProductOrderPayTypeEnum;
-import com.yulin.enums.ProductOrderStateEnum;
+import com.yulin.enums.*;
 import com.yulin.exception.BizException;
 import com.yulin.interceptor.LoginInterceptor;
 import com.yulin.manager.ProductManager;
 import com.yulin.manager.ProductOrderManager;
+import com.yulin.model.EventMessage;
 import com.yulin.model.LoginUser;
 import com.yulin.model.ProductDO;
 import com.yulin.model.ProductOrderDO;
@@ -20,6 +19,7 @@ import com.yulin.utils.JsonData;
 import com.yulin.utils.JsonUtil;
 import com.yulin.vo.PayInfoVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +42,12 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     @Autowired
     private ProductManager productManager;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private RabbitMQConfig rabbitMQConfig;
 
     @Override
     public Map<String, Object> page(ProductOrderPageRequest orderPageRequest) {
@@ -91,10 +97,18 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 .clientType(orderRequest.getClientType()).payType(orderRequest.getPayType())
                 .title(productDO.getTitle()).description("")
                 .payFee(orderRequest.getPayAmount()).orderPayTimeoutMills(TimeConstant.ORDER_PAY_TIMEOUT_MILLS).build();
-        //调用支付信息 TODO
 
         //发送关单延迟消息 TODO
-        return null;
+        EventMessage eventMessage = EventMessage.builder()
+                .eventMessageType(EventMessageType.PRODUCT_ORDER_NEW.name())
+                .accountNo(loginUser.getAccountNo())
+                .bizId(orderOutTradeNo)
+                .build();
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),rabbitMQConfig.getOrderCloseDelayRoutingKey(),eventMessage);
+
+        //调用支付信息 TODO
+
+        return JsonData.buildSuccess();
     }
 
     private ProductOrderDO setProductOrder(ConfirmOrderRequest orderRequest, LoginUser loginUser, String orderOutTradeNo, ProductDO productDO) {
