@@ -2,6 +2,7 @@ package com.yulin.service;
 
 import com.yulin.controller.request.ConfirmOrderRequest;
 import com.yulin.controller.request.ProductOrderPageRequest;
+import com.yulin.model.EventMessage;
 import com.yulin.utils.JsonData;
 
 import java.util.Map;
@@ -24,4 +25,10 @@ public interface ProductOrderService {
 
     JsonData confirmOrder(ConfirmOrderRequest orderRequest);
 
+    /**
+     * 关闭订单接口
+     * @param eventMessage
+     * @return
+     */
+    boolean closeProductOrder(EventMessage eventMessage);
 }
