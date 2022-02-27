@@ -105,7 +105,7 @@ public class ProductOrderController {
 
 
             }else if (payType.equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_PAY.name())){
-                //微信支付 直接响应json，里面含有连接，前段根据这个连接生成二维码
+                //微信支付 直接响应json数据，里面含有连接，前段根据这个连接生成二维码
                 CommonUtil.sendJsonMessage(response,jsonData);
             }
         }else {
