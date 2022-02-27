@@ -66,7 +66,6 @@ public class RepeatSubmitAspect {
      * ⽅式⼀：加锁 固定时间内不能᯿复提交
      * <p>
      * ⽅式⼆：先请求获取token，这边再删除token,删除成功则是第⼀次提交
-     *
      * @param joinPoint
      * @param repeatSubmit
      * @return
@@ -74,7 +73,6 @@ public class RepeatSubmitAspect {
      */
     @Around("pointCutNoRepeatSubmit(repeatSubmit)")
     public Object around(ProceedingJoinPoint joinPoint,RepeatSubmit repeatSubmit) throws Throwable {
-
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         long accountNo = LoginInterceptor.threadLocal.get().getAccountNo();
         //用于记录成功或者失败
