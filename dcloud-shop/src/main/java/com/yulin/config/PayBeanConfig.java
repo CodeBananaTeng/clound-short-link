@@ -1,7 +1,14 @@
 package com.yulin.config;
 
+import com.wechat.pay.contrib.apache.httpclient.WechatPayHttpClientBuilder;
+import com.wechat.pay.contrib.apache.httpclient.auth.PrivateKeySigner;
+import com.wechat.pay.contrib.apache.httpclient.auth.ScheduledUpdateCertificatesVerifier;
+import com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Credentials;
+import com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Validator;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
@@ -9,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -47,5 +55,34 @@ public class PayBeanConfig {
         } catch (InvalidKeySpecException e) {
             throw new RuntimeException("⽆效的密钥格式");
         }
+    }
+
+    /**
+     * 定时获取微信签名验证器，自动获取微信平台证书（证书里面包含微信平台公钥）
+     * @return
+     * @throws IOException
+     */
+    @Bean
+    public ScheduledUpdateCertificatesVerifier getCertificatesVerifier() throws IOException{
+        // 使⽤定时更新的签名验证器，不需要传⼊证书
+        ScheduledUpdateCertificatesVerifier verifier = null;
+            verifier = new ScheduledUpdateCertificatesVerifier(new WechatPay2Credentials(payConfig.getMchId(), new PrivateKeySigner(payConfig.getMchSerialNo(), getPrivateKey())), payConfig.getApiV3Key().getBytes(StandardCharsets.UTF_8));
+        return verifier;
+    }
+
+    /**
+     * 获取http请求对象，会自动处理签名和验签，同时进行证书更新
+     * @param verifier
+     * @return
+     * @throws IOException
+     */
+    @Bean("wechatPayClient")
+    public CloseableHttpClient getWechatPayClient(ScheduledUpdateCertificatesVerifier verifier) throws IOException {
+        WechatPayHttpClientBuilder builder = WechatPayHttpClientBuilder.create()
+                        .withMerchant(payConfig.getMchId(),payConfig.getMchSerialNo() , getPrivateKey())
+                        .withValidator(new WechatPay2Validator(verifier));
+        // 通过WechatPayHttpClientBuilder构造的HttpClient，会⾃动的处理签名和验签，并进⾏证书⾃动更新
+        CloseableHttpClient httpClient = builder.build();
+        return httpClient;
     }
 }
