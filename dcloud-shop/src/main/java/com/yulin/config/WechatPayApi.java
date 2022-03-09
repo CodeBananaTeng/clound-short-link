@@ -17,6 +17,7 @@ public class WechatPayApi {
      */
     public static final String NATIVE_ORDER = HOST + "/v3/pay/transactions/native";
 
+
     /**
      * native订单状态查询,根据商户的订单号
      */
