@@ -78,6 +78,7 @@ public class PayFactory {
             PayStrategyContext payStrategyContext = new PayStrategyContext(wechatPayStrategy);
             return payStrategyContext.executeQueryPayStateOrder(payInfoVO);
         }
+
         return "";
     }
 
