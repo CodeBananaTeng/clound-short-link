@@ -1,5 +1,6 @@
 package com.yulin.service.impl;
 
+import com.yulin.component.PayFactory;
 import com.yulin.config.RabbitMQConfig;
 import com.yulin.constant.TimeConstant;
 import com.yulin.controller.request.ProductOrderPageRequest;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -49,6 +51,9 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     @Autowired
     private RabbitMQConfig rabbitMQConfig;
+
+    @Autowired
+    private PayFactory payFactory;
 
     @Override
     public Map<String, Object> page(ProductOrderPageRequest orderPageRequest) {
@@ -78,7 +83,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
      * 发送延迟消息-⽤于⾃动关单（TODO）
      * 创建⽀付信息-对接三⽅⽀付（TODO）
      * 回调更新订单状态（TODO）
-     * ⽀付成功创建流ᰁ包（TODO）
+     * ⽀付成功创建流量包（TODO）
      * @param orderRequest
      * @return
      */
@@ -108,15 +113,20 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),rabbitMQConfig.getOrderCloseDelayRoutingKey(),eventMessage);
 
         //调用支付信息 TODO
-
-        return JsonData.buildSuccess();
+        String codeUrl = payFactory.pay(payInfoVO);
+        if (StringUtils.isNoneBlank(codeUrl)){
+            Map<String,String> resultMap = new HashMap<>();
+            resultMap.put("code_url",codeUrl);
+            resultMap.put("out_trade_no",payInfoVO.getOutTradeNo());
+            return JsonData.buildSuccess(resultMap);
+        }
+        return JsonData.buildSuccess(BizCodeEnum.PAY_ORDER_FAIL);
     }
 
     /**
      *
      * //延迟消息的时间 需要⽐订单过期 时间⻓⼀点，这样就不存
      * 在查询的时候，⽤户还能⽀付成功
-     *  *
      *  * //查询订单是否存在，如果已经⽀付则正常结束
      *  * //如果订单未⽀付，主动调⽤第三⽅⽀付平台查询订单状态
      *  * //确认未⽀付，本地取消订单
@@ -137,12 +147,10 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             log.warn("订单不存在");
             return true;
         }
-
         if (productOrderDO.getState().equalsIgnoreCase(ProductOrderStateEnum.PAY.name())){
             //已经支付
             log.info("直接确认消息，订单已经支付:{}",eventMessage);
             return true;
-
         }
         if (productOrderDO.getState().equalsIgnoreCase(ProductOrderStateEnum.NEW.name())){
             //未支付，需要向第三方支付平台查询支付状态
