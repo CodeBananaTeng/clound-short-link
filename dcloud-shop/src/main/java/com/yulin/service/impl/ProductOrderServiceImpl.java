@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -172,6 +173,48 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         }
         //其他状态，例如取消就返回true
         return true;
+    }
+
+
+    /**
+     * 处理微信回调通知
+     * @param payTypeEnum
+     * @param paramsMap
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
+    public JsonData processOrderCallbackMessage(ProductOrderPayTypeEnum payTypeEnum, Map<String, String> paramsMap) {
+        //获取商户订单号
+        String outTradeNo = paramsMap.get("out_trade_no");
+        //交易状态
+        String tradeState = paramsMap.get("trade_state");
+        //用户的编号
+        Long accountNo = Long.valueOf(paramsMap.get("account_no"));
+        ProductOrderDO productOrderDO = productOrderManager.findByOutTradeNoAndAccountNo(outTradeNo, accountNo);
+        Map<String,Object> content =  new HashMap<>(4);
+        content.put("outTradeNo",outTradeNo);
+        content.put("buyNum",productOrderDO.getBuyNum());
+        content.put("accountNo",accountNo);
+        content.put("product",productOrderDO.getProductSnapshot());
+        //构建消息
+        EventMessage eventMessage = EventMessage.builder()
+                .bizId(outTradeNo)
+                .accountNo(accountNo)
+                .messageId(outTradeNo)
+                .content(JsonUtil.obj2Json(content))
+                .eventMessageType(EventMessageType.ORDER_PAY.name())
+                .build();
+        if (payTypeEnum.name().equalsIgnoreCase(ProductOrderPayTypeEnum.ALI_PAY.name())){
+            //支付宝支付逻辑 TODO
+        }else if (payTypeEnum.name().equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_PAY.name())){
+            //微信支付的内容
+            if ("SUCCESS".equalsIgnoreCase(tradeState)){
+                //成功就发送消息
+                rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),rabbitMQConfig.getOrderUpdateTrafficRoutingKey(),eventMessage);
+                return JsonData.buildSuccess();
+            }
+        }
+        return JsonData.buildResult(BizCodeEnum.PAY_ORDER_CALLBACK_NOT_SUCCESS);
     }
 
     private ProductOrderDO setProductOrder(ConfirmOrderRequest orderRequest, LoginUser loginUser, String orderOutTradeNo, ProductDO productDO) {

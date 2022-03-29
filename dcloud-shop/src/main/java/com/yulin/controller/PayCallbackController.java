@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.wechat.pay.contrib.apache.httpclient.auth.ScheduledUpdateCertificatesVerifier;
 import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
 import com.yulin.config.WechatPayConfig;
+import com.yulin.enums.ProductOrderPayTypeEnum;
 import com.yulin.service.ProductOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,12 +79,12 @@ public class PayCallbackController {
             //验证签名是否通过
             boolean result = verifiedSign(serialNo, signStr, signature);
             if (result){
-                //解密数据 TODO
+                //解密数据
                 String plainBody = decryptBody(body);
                 log.info("解密后的明文数据是:{}",plainBody);
                 Map<String,String> paramsMap = convertWechatMessage(plainBody);
-                //处理业务逻辑 TODO
-
+                //处理业务逻辑
+                productOrderService.processOrderCallbackMessage(ProductOrderPayTypeEnum.WECHAT_PAY,paramsMap);
                 //响应微信 TODO
                 map.put("code","SUCCESS");
                 map.put("message","成功");

@@ -2,6 +2,7 @@ package com.yulin.service;
 
 import com.yulin.controller.request.ConfirmOrderRequest;
 import com.yulin.controller.request.ProductOrderPageRequest;
+import com.yulin.enums.ProductOrderPayTypeEnum;
 import com.yulin.model.EventMessage;
 import com.yulin.utils.JsonData;
 
@@ -31,4 +32,11 @@ public interface ProductOrderService {
      * @return
      */
     boolean closeProductOrder(EventMessage eventMessage);
+
+    /**
+     * 处理微信回调通知
+     * @param wechatPay
+     * @param paramsMap
+     */
+    JsonData processOrderCallbackMessage(ProductOrderPayTypeEnum wechatPay, Map<String, String> paramsMap);
 }
