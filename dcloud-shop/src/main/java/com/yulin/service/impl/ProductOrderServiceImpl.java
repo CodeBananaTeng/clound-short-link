@@ -206,6 +206,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 .build();
         if (payTypeEnum.name().equalsIgnoreCase(ProductOrderPayTypeEnum.ALI_PAY.name())){
             //支付宝支付逻辑 TODO
+
         }else if (payTypeEnum.name().equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_PAY.name())){
             //微信支付的内容
             if ("SUCCESS".equalsIgnoreCase(tradeState)){
