@@ -20,7 +20,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-@RabbitListener(queuesToDeclare = {@Queue("order.close.queue")})
+@RabbitListener(queuesToDeclare = {
+        @Queue("order.close.queue"),
+        @Queue("order.update.queue")
+})
 public class ProductOrderMQListener {
 
     @Autowired
@@ -29,11 +32,10 @@ public class ProductOrderMQListener {
     @RabbitHandler
     public void productOrderHandler(EventMessage eventMessage, Message message, Channel channel){
         log.info("监听到ProductOrderMQListener消息 message消息内容:{}",message);
-
         try {
-
+            productOrderService.handleProductOrderMessage(eventMessage);
             //业务逻辑 关闭订单 TODO
-            boolean b = productOrderService.closeProductOrder(eventMessage);
+            //boolean b = productOrderService.closeProductOrder(eventMessage);
         }catch (Exception e){
             log.error("消费失败:{}",eventMessage);
             throw new BizException(BizCodeEnum.MQ_CONSUME_EXCEPTION);

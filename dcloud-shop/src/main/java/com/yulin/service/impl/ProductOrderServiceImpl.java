@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Auther:LinuxTYL
@@ -55,6 +57,9 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     @Autowired
     private PayFactory payFactory;
+
+    @Autowired
+    private RedisTemplate<Object,Object> redisTemplate;
 
     @Override
     public Map<String, Object> page(ProductOrderPageRequest orderPageRequest) {
@@ -202,7 +207,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 .accountNo(accountNo)
                 .messageId(outTradeNo)
                 .content(JsonUtil.obj2Json(content))
-                .eventMessageType(EventMessageType.ORDER_PAY.name())
+                .eventMessageType(EventMessageType.PRODUCT_ORDER_PAY.name())
                 .build();
         if (payTypeEnum.name().equalsIgnoreCase(ProductOrderPayTypeEnum.ALI_PAY.name())){
             //支付宝支付逻辑 TODO
@@ -210,13 +215,19 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         }else if (payTypeEnum.name().equalsIgnoreCase(ProductOrderPayTypeEnum.WECHAT_PAY.name())){
             //微信支付的内容
             if ("SUCCESS".equalsIgnoreCase(tradeState)){
-                //成功就发送消息
-                rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),rabbitMQConfig.getOrderUpdateTrafficRoutingKey(),eventMessage);
-                return JsonData.buildSuccess();
+                Boolean flag = redisTemplate.opsForValue().setIfAbsent(outTradeNo, "ok", 3, TimeUnit.DAYS);
+                if (flag){
+                    //成功就发送消息，如果这个key不存在就返回一个true 但是这个会存在一个问题：数据设置成功了但是发送消息存在异常，这而是事务的形式可以使用MySQL来进行回滚
+                    rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),rabbitMQConfig.getOrderUpdateTrafficRoutingKey(),eventMessage);
+                    return JsonData.buildSuccess();
+                }
+
             }
         }
         return JsonData.buildResult(BizCodeEnum.PAY_ORDER_CALLBACK_NOT_SUCCESS);
     }
+
+
 
     private ProductOrderDO setProductOrder(ConfirmOrderRequest orderRequest, LoginUser loginUser, String orderOutTradeNo, ProductDO productDO) {
         ProductOrderDO productOrderDO = new ProductOrderDO();
@@ -271,5 +282,31 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         }
     }
 
+    /**
+     * 处理订单类相关消息
+     * @param eventMessage
+     */
+    @Override
+    public void handleProductOrderMessage(EventMessage eventMessage) {
+        String messageType = eventMessage.getEventMessageType();
 
+        try{
+
+            if (EventMessageType.PRODUCT_ORDER_NEW.name().equalsIgnoreCase(messageType)){
+                //关闭订单
+                this.closeProductOrder(eventMessage);
+            }else if (EventMessageType.PRODUCT_ORDER_PAY.name().equalsIgnoreCase(messageType)){
+                //订单已经支付，更新订单状态
+                String outTradeNo = eventMessage.getBizId();
+                Long accountNo = eventMessage.getAccountNo();
+                int rows = productOrderManager.updateOrderPayStatus(outTradeNo, accountNo, ProductOrderStateEnum.PAY.name(), ProductOrderStateEnum.NEW.name());
+                log.info("订单更新成功:rows={},eventMessage={}",rows,eventMessage);
+            }
+
+
+        }catch (Exception e){
+            log.error("消费消息失败:{}",e);
+            throw new BizException(BizCodeEnum.MQ_CONSUME_EXCEPTION);
+        }
+    }
 }
