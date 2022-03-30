@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @Slf4j
-public class RRabbitMQConfig {
+public class RabbitMQConfig {
 
     /**
      * 消息转换器
