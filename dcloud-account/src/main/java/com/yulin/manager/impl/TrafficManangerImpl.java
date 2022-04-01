@@ -59,5 +59,6 @@ public class TrafficManangerImpl implements TrafficManager {
                 .eq("account_no",accountNo)
                 .eq("id",currentTrafficId)
                 .set("day_used",daUseTimes));
+        
     }
 }

@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
 
 /**
  * <p>
@@ -19,6 +19,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("traffic")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TrafficDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,8 +58,7 @@ public class TrafficDO implements Serializable {
     private String outTradeNo;
 
     /**
-     * 产品层级：FIRST⻘铜、
-SECOND⻩⾦、THIRD钻⽯
+     * 产品层级：FIRST⻘铜、SECOND⻩⾦、THIRD钻⽯
      */
     private String level;
 
