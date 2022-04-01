@@ -8,6 +8,7 @@ import com.yulin.service.TrafficService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ public class TrafficMQListener {
     @Autowired
     private TrafficService trafficService;
 
+    @RabbitHandler
     public void trafficHandler(EventMessage eventMessage, Message message, Channel channel){
 
         log.info("监听消息trafficHandler:{}",eventMessage);

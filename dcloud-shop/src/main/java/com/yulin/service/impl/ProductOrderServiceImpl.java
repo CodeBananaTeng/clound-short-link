@@ -219,6 +219,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 if (flag){
                     //成功就发送消息，如果这个key不存在就返回一个true 但是这个会存在一个问题：数据设置成功了但是发送消息存在异常，这而是事务的形式可以使用MySQL来进行回滚
                     rabbitTemplate.convertAndSend(rabbitMQConfig.getOrderEventExchange(),rabbitMQConfig.getOrderUpdateTrafficRoutingKey(),eventMessage);
+                    log.error("消息发送成功:{}",eventMessage);
                     return JsonData.buildSuccess();
                 }
 

@@ -130,7 +130,7 @@ public class RabbitMQConfig {
     /**
      * 微信回调发送通知的routing key【发送消息使用】
      */
-    private String orderUpdateTrafficRoutingKey = "order.update.traffic.routing.queue";
+    private String orderUpdateTrafficRoutingKey = "order.update.traffic.routing.key";
 
     /**
      * topic类型的 用于绑定订单队列和交换机
