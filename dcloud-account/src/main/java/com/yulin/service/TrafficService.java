@@ -1,6 +1,10 @@
 package com.yulin.service;
 
+import com.yulin.controller.request.TrafficPageRequest;
 import com.yulin.model.EventMessage;
+import com.yulin.vo.TrafficVO;
+
+import java.util.Map;
 
 /**
  * @Auther:LinuxTYL
@@ -15,4 +19,17 @@ public interface TrafficService {
      */
     void handleTrafficMessage(EventMessage eventMessage);
 
+    /**
+     * 查找可用的流量包
+     * @param request
+     * @return
+     */
+    Map<String, Object> pageAvailable(TrafficPageRequest request);
+
+    /**
+     * 查找VO
+     * @param trafficId
+     * @return
+     */
+    TrafficVO detail(Long trafficId);
 }

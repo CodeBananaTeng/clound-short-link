@@ -1,14 +1,20 @@
 package com.yulin.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.yulin.controller.request.TrafficPageRequest;
 import com.yulin.enums.EventMessageType;
+import com.yulin.interceptor.LoginInterceptor;
 import com.yulin.manager.TrafficManager;
 import com.yulin.model.EventMessage;
+import com.yulin.model.LoginUser;
 import com.yulin.model.TrafficDO;
 import com.yulin.service.TrafficService;
 import com.yulin.utils.JsonUtil;
 import com.yulin.utils.TimeUtil;
 import com.yulin.vo.ProductVO;
+import com.yulin.vo.TrafficVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Auther:LinuxTYL
@@ -69,6 +78,41 @@ public class TrafficServiceImpl implements TrafficService {
             log.info("消费消息->新增流量包rows=:{}",rows);
         }
         
+    }
+
+    @Override
+    public Map<String, Object> pageAvailable(TrafficPageRequest request) {
+        int size = request.getSize();
+        int page = request.getPage();
+        LoginUser loginUser = LoginInterceptor.threadLocal.get();
+
+        IPage<TrafficDO> trafficDOIPage = trafficManager.pageAvailable(page, size, loginUser.getAccountNo());
+        //获取流量包列表
+        List<TrafficDO> records = trafficDOIPage.getRecords();
+        List<TrafficVO> trafficVOList = records.stream().map(obj -> beanProcess(obj)).collect(Collectors.toList());
+        Map<String,Object> pageMap = new HashMap<>();
+        pageMap.put("total_record",trafficDOIPage.getTotal());
+        pageMap.put("total_page",trafficDOIPage.getPages());
+        pageMap .put("current_data",trafficVOList);
+        return pageMap;
+    }
+
+    /**
+     * 查找详情
+     * @param trafficId
+     * @return
+     */
+    @Override
+    public TrafficVO detail(Long trafficId) {
+        LoginUser loginUser = LoginInterceptor.threadLocal.get();
+        TrafficDO byIdAndAccountNo = trafficManager.findByIdAndAccountNo(trafficId, loginUser.getAccountNo());
+        return beanProcess(byIdAndAccountNo);
+    }
+
+    private TrafficVO beanProcess(TrafficDO obj) {
+        TrafficVO trafficVO = new TrafficVO();
+        BeanUtils.copyProperties(obj,trafficVO);
+        return trafficVO;
     }
 
 }
