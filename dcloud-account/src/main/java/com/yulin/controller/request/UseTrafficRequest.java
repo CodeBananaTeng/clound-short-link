@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
  */
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+//@NoArgsConstructor
+//@AllArgsConstructor
 @Builder
 public class UseTrafficRequest {
 

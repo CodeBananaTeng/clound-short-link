@@ -1,14 +1,17 @@
 package com.yulin.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yulin.controller.request.TrafficPageRequest;
 import com.yulin.enums.EventMessageType;
+import com.yulin.feign.ProductFeignService;
 import com.yulin.interceptor.LoginInterceptor;
 import com.yulin.manager.TrafficManager;
 import com.yulin.model.EventMessage;
 import com.yulin.model.LoginUser;
 import com.yulin.model.TrafficDO;
 import com.yulin.service.TrafficService;
+import com.yulin.utils.JsonData;
 import com.yulin.utils.JsonUtil;
 import com.yulin.utils.TimeUtil;
 import com.yulin.vo.ProductVO;
@@ -40,19 +43,20 @@ public class TrafficServiceImpl implements TrafficService {
     @Autowired
     private TrafficManager trafficManager;
 
+    @Autowired
+    private ProductFeignService productFeignService;
+
     @Override
     @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
     public void handleTrafficMessage(EventMessage eventMessage) {
-        
+        Long accountNo =  eventMessage.getAccountNo();
         String messageType = eventMessage.getEventMessageType();
         if (EventMessageType.PRODUCT_ORDER_PAY.name().equalsIgnoreCase(messageType)){
             
             //订单已经支付新增流量包
             String content = eventMessage.getContent();
             Map<String,Object> orderInfoMap = JsonUtil.json2Obj(content, Map.class);
-
             //还原订单商品信息
-            Long accountNo = (Long) orderInfoMap.get("accountNo");
             String outTradeNo = (String) orderInfoMap.get("outTradeNo");
             Integer buyNum = (Integer) orderInfoMap.get("buyNum");
             String productStr = (String) orderInfoMap.get("product");
@@ -76,6 +80,25 @@ public class TrafficServiceImpl implements TrafficService {
                     .build();
             int rows = trafficManager.add(trafficDO);
             log.info("消费消息->新增流量包rows=:{}",rows);
+        }else if (EventMessageType.TRAFFIC_FREE_INIT.name().equalsIgnoreCase(messageType)){
+            //免费发放流量包的业务逻辑
+            Long bizId = Long.valueOf(eventMessage.getBizId());
+            JsonData jsonData = productFeignService.detail(bizId);
+
+            ProductVO productVO = jsonData.getData(new TypeReference<ProductVO>() {
+            });
+            //构建流量包
+            TrafficDO trafficDO = TrafficDO.builder().accountNo(accountNo)
+                    .dayLimit(productVO.getDayTimes())
+                    .dayUsed(0)
+                    .totalLimit(productVO.getTotalTimes())
+                    .pluginType(productVO.getPluginType())
+                    .level(productVO.getLevel())
+                    .productId(productVO.getId())
+                    .outTradeNo("free_init")
+                    .expiredDate(new Date())
+                    .build();
+            trafficManager.add(trafficDO);
         }
         
     }

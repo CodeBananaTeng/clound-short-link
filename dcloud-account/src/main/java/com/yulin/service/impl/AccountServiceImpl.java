@@ -1,12 +1,15 @@
 package com.yulin.service.impl;
 
+import com.yulin.config.RabbitMQConfig;
 import com.yulin.controller.request.AccountLoginRequest;
 import com.yulin.controller.request.AccountRegisterRequest;
 import com.yulin.enums.AuthTypeEnum;
 import com.yulin.enums.BizCodeEnum;
+import com.yulin.enums.EventMessageType;
 import com.yulin.enums.SengCodeEnum;
 import com.yulin.manager.AccountManage;
 import com.yulin.model.AccountDO;
+import com.yulin.model.EventMessage;
 import com.yulin.model.LoginUser;
 import com.yulin.service.AccountService;
 import com.yulin.service.NotifyService;
@@ -17,9 +20,12 @@ import com.yulin.utils.JsonData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,6 +44,17 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountManage accountManage;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private RabbitMQConfig rabbitMQConfig;
+
+    /**
+     * 免费流量包商品ID固定为1
+     */
+    private static final Long FREE_TRAFFIC_PRODUCT_ID = 1L;
+
     /**
      * ⼿机验证码验证
      * 密码加密（TODO）
@@ -48,6 +65,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
     public JsonData register(AccountRegisterRequest registerRequest) {
         //手机验证码，判断验证码是否false
         boolean checkCode = false;
@@ -122,11 +140,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * 用户初始化发放流量包 TODO
+     * 用户初始化发放流量包
      * @param request
      */
     private JsonData userRegisterInitTask(AccountDO request) {
-
+        EventMessage build = EventMessage.builder()
+                .messageId(IDUtil.geneSnowFlakeID().toString())
+                .accountNo(request.getAccountNo())
+                .eventMessageType(EventMessageType.TRAFFIC_FREE_INIT.name())
+                .bizId(FREE_TRAFFIC_PRODUCT_ID.toString())
+                .build();
+        //发放流量包消息
+        rabbitTemplate.convertAndSend(rabbitMQConfig.getTrafficEventExchange(),rabbitMQConfig.getTrafficFreeInitRoutingKey(),build);
         return null;
     }
 
