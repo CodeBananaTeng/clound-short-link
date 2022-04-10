@@ -2,7 +2,9 @@ package com.yulin.job;
 
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
+import com.yulin.service.TrafficService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,11 +14,20 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class MyJobHandler {
+public class TrafficJobHandler {
 
-    @XxlJob(value = "demoJobHandler",init = "",destroy = "")
+    @Autowired
+    private TrafficService trafficService;
+
+    /**
+     * 过期流量包执行
+     * @param param
+     * @return
+     */
+    @XxlJob(value = "trafficExpireHandler",init = "init",destroy = "destory")
     public ReturnT<String> excute(String param){
-        log.info("execute 任务方法触发执行成功");
+        trafficService.deleteExpireTraffic();
+        log.info("触发执行");
         return ReturnT.SUCCESS;
     }
 

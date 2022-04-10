@@ -3,6 +3,7 @@ package com.yulin.biz;
 import com.yulin.AccountApplication;
 import com.yulin.component.SmsComponent;
 import com.yulin.config.SmsConfig;
+import com.yulin.manager.TrafficManager;
 import com.yulin.mapper.TrafficMapper;
 import com.yulin.model.TrafficDO;
 import org.junit.Test;
@@ -25,6 +26,9 @@ public class TrafficTest {
     @Autowired
     private TrafficMapper trafficMapper;
 
+    @Autowired
+    private TrafficManager trafficManager;
+
     @Test
     public void testSendSms(){
 
@@ -35,5 +39,11 @@ public class TrafficTest {
             trafficMapper.insert(trafficDO);
         }
     }
+
+    @Test
+    public void testDeleteExpireTraffic(){
+        trafficManager.deleteExpireTraffic();
+    }
+
 
 }

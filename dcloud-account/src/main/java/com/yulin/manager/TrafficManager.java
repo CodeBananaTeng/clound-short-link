@@ -43,4 +43,9 @@ public interface TrafficManager {
      */
     int addDayUsedTimes(Long currentTrafficId,Long accountNo,int daUseTimes);
 
+    /**
+     * 删除过期流量包
+     * @return
+     */
+    boolean deleteExpireTraffic();
 }

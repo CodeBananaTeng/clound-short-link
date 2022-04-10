@@ -32,4 +32,10 @@ public interface TrafficService {
      * @return
      */
     TrafficVO detail(Long trafficId);
+
+    /**
+     * 删除过期流量包
+     * @return
+     */
+    boolean deleteExpireTraffic();
 }
