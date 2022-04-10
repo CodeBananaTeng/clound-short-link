@@ -3,6 +3,8 @@ package com.yulin.manager;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yulin.model.TrafficDO;
 
+import java.util.List;
+
 /**
  * 流量包管理
  * @Auther:LinuxTYL
@@ -34,18 +36,43 @@ public interface TrafficManager {
      */
     TrafficDO findByIdAndAccountNo(Long trafficId,Long accountNo);
 
-    /**
-     * 增加某个流量包的使用次数
-     * @param currentTrafficId
-     * @param accountNo
-     * @param daUseTimes
-     * @return
-     */
-    int addDayUsedTimes(Long currentTrafficId,Long accountNo,int daUseTimes);
 
     /**
      * 删除过期流量包
      * @return
      */
     boolean deleteExpireTraffic();
+
+    /**
+     * 查找可⽤的短链流量包(未过期),包括免费流ᰁ包
+     * @param accountNo
+     * @return
+     */
+    List<TrafficDO> selectAvailableTraffics(Long accountNo);
+
+    /**
+     * 给某个流量包增加使⽤次数
+     *
+     * @param currentTrafficId
+     * @param accountNo
+     * @param usedTimes
+     * @return
+     */
+    int addDayUsedTimes(Long accountNo, Long trafficId, Integer usedTimes);
+
+    /**
+     * 恢复流量包使⽤当天次数
+     * @param accountNo
+     * @param trafficId
+     * @param useTimes
+     */
+    int releaseUsedTimes(long accountNo, Long trafficId, Integer useTimes);
+
+    /**
+     * 批量更新流量包使⽤次数为0
+     * @param accountNo
+     * @param unUpdatedTrafficIds
+     */
+    int batchUpdateUsedTimes(Long accountNo, List<Long> unUpdatedTrafficIds);
+
 }

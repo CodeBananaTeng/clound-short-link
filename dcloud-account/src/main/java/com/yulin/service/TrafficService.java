@@ -1,7 +1,9 @@
 package com.yulin.service;
 
 import com.yulin.controller.request.TrafficPageRequest;
+import com.yulin.controller.request.UseTrafficRequest;
 import com.yulin.model.EventMessage;
+import com.yulin.utils.JsonData;
 import com.yulin.vo.TrafficVO;
 
 import java.util.Map;
@@ -38,4 +40,11 @@ public interface TrafficService {
      * @return
      */
     boolean deleteExpireTraffic();
+
+    /**
+     * 扣减流量包
+     * @param useTrafficRequest
+     * @return
+     */
+    JsonData reduce(UseTrafficRequest useTrafficRequest);
 }
