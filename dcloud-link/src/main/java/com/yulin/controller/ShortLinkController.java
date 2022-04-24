@@ -7,13 +7,12 @@ import com.yulin.controller.request.ShortLinkPageRequest;
 import com.yulin.controller.request.ShortLinkUpdateRequest;
 import com.yulin.service.ShortLinkService;
 import com.yulin.utils.JsonData;
+import com.yulin.vo.ShortLinkVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
-
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -30,6 +29,21 @@ public class ShortLinkController {
 
     @Autowired
     private ShortLinkService shortLinkService;
+
+    @Value("${rpc.token}")
+    private String rpcToken;
+
+    @GetMapping("check")
+    JsonData check(@RequestParam("shortLinkCode")String shortLinkCode, HttpServletRequest request){
+
+        String token = request.getHeader("rpc-token");
+        if (rpcToken.equalsIgnoreCase(token)){
+            ShortLinkVO shortLinkVO = shortLinkService.parseShortLinkCode(shortLinkCode);
+            return shortLinkVO == null ? JsonData.buildError("短链码不存在"):JsonData.buildSuccess();
+        }else {
+            return JsonData.buildError("非法访问");
+        }
+    }
 
     /**
      * 新增短链

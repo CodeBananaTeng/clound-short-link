@@ -11,6 +11,9 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @Auther:LinuxTYL
  * @Date:2022/3/30
@@ -72,6 +75,67 @@ public class RabbitMQConfig {
     @Bean
     public Queue trafficFreeInitQueue(){
         return new Queue(trafficFreeInitQueue,true,false,false);
+    }
+
+
+    //================流量包扣减，创建短链死信队列配置==================================
+    // 发送锁定流ᰁ包消息-》延迟exchange-》lock.queue-》死信exchange-》release.queue 延迟队列，不能被监听消费
+    /**
+     * 第⼀个队列延迟队列，
+     */
+    private String trafficReleaseDelayQueue = "traffic.release.delay.queue";
+    /**
+     * 第⼀个队列的路由key
+     * 进⼊队列的路由key
+     */
+    private String trafficReleaseDelayRoutingKey = "traffic.release.delay.routing.key";
+    /**
+     * 第⼆个队列，被监听恢复流量包的队列
+     */
+    private String trafficReleaseQueue = "traffic.release.queue";
+    /**
+     * 第⼆个队列的路由key
+     *
+     * 即进⼊死信队列的路由key
+     */
+    private String trafficReleaseRoutingKey="traffic.release.routing.key";
+    /**
+     * 过期时间，毫秒,1分钟
+     */
+    private Integer ttl = 60000;
+    /**
+     * 延迟队列
+     */
+    @Bean
+    public Queue trafficReleaseDelayQueue(){
+        Map<String,Object> args = new HashMap<>(3);
+        args.put("x-message-ttl",ttl);
+        args.put("x-dead-letter-exchange", trafficEventExchange);
+        args.put("x-dead-letter-routing-key",trafficReleaseRoutingKey);
+        return new Queue(trafficReleaseDelayQueue,true,false,false,args);
+    }
+    /**
+     * 死信队列，普通队列，⽤于被监听
+     */
+    @Bean
+    public Queue trafficReleaseQueue(){
+        return new Queue(trafficReleaseQueue,true,false,false);
+    }
+    /**
+     * 第⼀个队列，即延迟队列的绑定关系建⽴
+     * @return
+     */
+    @Bean
+    public Binding trafficReleaseDelayBinding(){
+        return new Binding(trafficReleaseDelayQueue,Binding.DestinationType.QUEUE, trafficEventExchange,trafficReleaseDelayRoutingKey,null);
+    }
+    /**
+     * 死信队列绑定关系建⽴
+     * @return
+     */
+    @Bean
+    public Binding trafficReleaseBinding(){
+        return new Binding(trafficReleaseQueue,Binding.DestinationType.QUEUE, trafficEventExchange,trafficReleaseRoutingKey,null);
     }
 
 }

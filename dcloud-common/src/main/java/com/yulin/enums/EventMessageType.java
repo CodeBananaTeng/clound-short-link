@@ -66,4 +66,9 @@ public enum EventMessageType {
      */
     TRAFFIC_FREE_INIT,
 
+    /**
+     * 使用流量包
+     */
+    TRAFFIC_USED,
+
 }
