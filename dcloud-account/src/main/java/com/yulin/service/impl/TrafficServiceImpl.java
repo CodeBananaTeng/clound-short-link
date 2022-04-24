@@ -144,7 +144,10 @@ public class TrafficServiceImpl implements TrafficService {
                 JsonData jsonData = shortLinkFeignService.check(trafficTaskDO.getBizId());
                 if (jsonData.getCode() !=0){
                     log.error("创建短链失败，流量包回滚");
-                    trafficManager.releaseUsedTimes(accountNo,trafficTaskDO.getTrafficId(),1);
+                    String userDateStr = TimeUtil.format(trafficTaskDO.getGmtCreate(), "yyy-MM-dd");
+                    trafficManager.releaseUsedTimes(accountNo,trafficTaskDO.getTrafficId(),1,userDateStr);
+                    String totalTrafficTimesKey = String.format(RedisKey.DAY_TOTAL_TRAFFIC,accountNo);
+                    redisTemplate.delete(totalTrafficTimesKey);
                 }
                 //多种方式处理task，布里克删除，可以更新状态，然后定时删除也行
                 trafficTaskManager.deleteByIdAndAccountNo(trafficTaskId,accountNo);

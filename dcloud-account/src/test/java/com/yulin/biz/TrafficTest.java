@@ -63,11 +63,11 @@ public class TrafficTest {
         trafficManager.addDayUsedTimes(1640008875462L,1510957867340521473L,1);
     }
 
-    @Test
-    public void testReleaseDayUsedTimes(){
-        int rows = trafficManager.releaseUsedTimes(1640008875462L, 1510957867340521473L, 1);
-        log.info("rows = {}",rows);
-    }
+//    @Test
+//    public void testReleaseDayUsedTimes(){
+//        int rows = trafficManager.releaseUsedTimes(1640008875462L, 1510957867340521473L, 1);
+//        log.info("rows = {}",rows);
+//    }
 
     @Test
     public void testBatchUpdateUsedTimes(){

@@ -31,5 +31,6 @@ public interface TrafficMapper extends BaseMapper<TrafficDO> {
      * @param trafficId
      * @param useTimes
      */
-    void releaseUsedTimes(@Param("accountNo") long accountNo,@Param("trafficId") Long trafficId,@Param("usedTimes") Integer useTimes);
+    void releaseUsedTimes(@Param("accountNo") long accountNo,@Param("trafficId") Long trafficId,@Param("usedTimes") Integer useTimes
+    ,@Param("userDateStr")String userDateStr);
 }

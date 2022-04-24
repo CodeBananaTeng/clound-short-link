@@ -66,7 +66,7 @@ public interface TrafficManager {
      * @param trafficId
      * @param useTimes
      */
-    int releaseUsedTimes(long accountNo, Long trafficId, Integer useTimes);
+    int releaseUsedTimes(long accountNo, Long trafficId, Integer useTimes,String userDateStr);
 
     /**
      * 批量更新流量包使⽤次数为0
