@@ -1,6 +1,7 @@
 package com.yulin.controller;
 
 import com.yulin.enums.ShortLinkStateEnum;
+import com.yulin.service.LogService;
 import com.yulin.service.ShortLinkService;
 import com.yulin.utils.CommonUtil;
 import com.yulin.vo.ShortLinkVO;
@@ -27,6 +28,10 @@ public class LinkApiController {
     @Autowired
     private ShortLinkService shortLinkService;
 
+    @Autowired
+    private LogService logService;
+
+
     /**
      * 解析 301还是302，这边是返回http code是302
      * <p>
@@ -48,6 +53,7 @@ public class LinkApiController {
     @GetMapping(path = "/{shortLinkCode}")
     public void dispatch(@PathVariable(name = "shortLinkCode") String shortLinkCode,
                          HttpServletRequest request, HttpServletResponse response){
+
         try {
 
 
@@ -57,6 +63,9 @@ public class LinkApiController {
                 //查找短链 TODO
                 ShortLinkVO shortLinkVO = shortLinkService.parseShortLinkCode(shortLinkCode);
                 //判断是否过期过着可用
+                if (shortLinkVO != null){
+                    logService.recordShortLinkLog(request,shortLinkCode,shortLinkVO.getAccountNo());
+                }
                 if (isVisitable(shortLinkVO)) {
                     String originalUrl = CommonUtil.removeUrlPrefix(shortLinkVO.getOriginalUrl());
 
