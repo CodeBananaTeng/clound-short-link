@@ -97,8 +97,9 @@ public class LinkApiController {
             }
         } else if (shortLinkVO != null && shortLinkVO.getExpired().getTime() > CommonUtil.getCurrentTimestamp()) {
             if (ShortLinkStateEnum.ACTIVE.name().equalsIgnoreCase(shortLinkVO.getState())) {
-
             }
+            //测试使用，此处只是作用返回短链合法
+            return true;
         }
         return false;
     }
