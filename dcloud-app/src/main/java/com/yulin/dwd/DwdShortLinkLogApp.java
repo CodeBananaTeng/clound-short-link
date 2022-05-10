@@ -52,9 +52,9 @@ public class DwdShortLinkLogApp {
         //并行度1
         env.setParallelism(1);
 
-        DataStream<String> ds = env.socketTextStream("127.0.0.1", 8889);
+        //DataStream<String> ds = env.socketTextStream("127.0.0.1", 8887); //此处为联通测试使用，需要使用时候放开
         FlinkKafkaConsumer<String> kafkaConsumer = KafkaUtil.getKafkaConsumer(SOURCE_TOPIC, GROUP_ID);
-        //DataStreamSource<String> ds = env.addSource(kafkaConsumer);
+        DataStreamSource<String> ds = env.addSource(kafkaConsumer);
         ds.print();
 
         //数据补齐，添加唯一标识，referer等
