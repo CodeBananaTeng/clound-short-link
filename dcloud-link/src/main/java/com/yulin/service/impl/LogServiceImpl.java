@@ -36,7 +36,7 @@ public class LogServiceImpl implements LogService{
         //全部请求头
         Map<String, String> headerMap = CommonUtil.getAllRequestHeader(request);
         Map<String,String> avaliableMap = new HashMap<>();
-        avaliableMap.put("user_agent",headerMap.get("user_agent"));
+        avaliableMap.put("user-agent",headerMap.get("user-agent"));
         avaliableMap.put("referer",headerMap.get("referer"));
         avaliableMap.put("accountNo",accountNo.toString());
         LogRecord logRecord = LogRecord.builder()
@@ -56,7 +56,7 @@ public class LogServiceImpl implements LogService{
                 .bizId(shortLinkCode).build();
         String jsonLog = JsonUtil.obj2Json(logRecord);
         //打印到控制台方便排查
-        log.info(jsonLog);
+        log.info("发送访问日志:{}",jsonLog);
         //发送到kafka
         kafkaTemplate.send(TOPIC_NAME,jsonLog);
     }
