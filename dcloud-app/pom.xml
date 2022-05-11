@@ -117,6 +117,13 @@
             <artifactId>flink-connector-jdbc_${scala.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
+<!--设备UserAgent 提取工具-->
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.21</version>
+        </dependency>
+
     </dependencies>
     <!-- 指定仓库位置，先从aliyun找，找不到再从apache仓库找
    -->
