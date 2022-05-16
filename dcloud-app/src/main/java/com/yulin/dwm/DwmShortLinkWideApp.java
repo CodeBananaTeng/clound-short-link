@@ -36,7 +36,7 @@ public class DwmShortLinkWideApp {
     /**
      * 定义SINK topic
      */
-    public static final String SINK_TOPIC = "dwn_link_visit_topic";
+    public static final String SINK_TOPIC = "dwm_link_visit_topic";
 
     /**
      * 定义消费者组

@@ -33,7 +33,7 @@ public class VistorMapFunction extends RichMapFunction<JSONObject,String> {
 
         //获取当前时间戳
         Long ts = value.getLong("ts");
-        String currentDateStr = TimeUtil.format(ts);
+        String currentDateStr = TimeUtil.formatWithTime(ts);
 
         //判断日期是否为空进行新老访客识别
         if (StringUtils.isNotBlank(beforeDateState)){

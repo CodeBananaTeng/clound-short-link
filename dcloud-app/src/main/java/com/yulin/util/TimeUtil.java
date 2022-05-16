@@ -16,10 +16,13 @@ public class TimeUtil {
      * 默认⽇期格式
      */
     private static final String DEFAULT_PATTERN = "yyyy-MM-dd";
+    private static final String DEFAULT_PATTERN_WITH_TIME = "yyyy-MM-dd hh:mm:ss";
     /**
      * 默认⽇期格式
      */
     private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DEFAULT_PATTERN);
+    private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMATTER_WITH_TIME = DateTimeFormatter.ofPattern(DEFAULT_PATTERN_WITH_TIME);
+
     private static final ZoneId DEFAULT_ZONE_ID = ZoneId.systemDefault();
     /**
      * LocalDateTime 转 字符串，指定⽇期格式
@@ -27,7 +30,7 @@ public class TimeUtil {
      * @param pattern
      * @return
      */
-    public static String format(LocalDateTime localDateTime, String pattern){
+    public static String formatWithTime(LocalDateTime localDateTime, String pattern){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         String timeStr = formatter.format(localDateTime.atZone(DEFAULT_ZONE_ID));
         return timeStr;
@@ -38,7 +41,7 @@ public class TimeUtil {
      * @param pattern
      * @return
      */
-    public static String format(Date time, String pattern){
+    public static String formatWithTime(Date time, String pattern){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         String timeStr = formatter.format(time.toInstant().atZone(DEFAULT_ZONE_ID));
         return timeStr;
@@ -48,7 +51,7 @@ public class TimeUtil {
      * @param time
      * @return
      */
-    public static String format(Date time){
+    public static String formatWithTime(Date time){
         String timeStr = DEFAULT_DATE_TIME_FORMATTER.format(time.toInstant().atZone(DEFAULT_ZONE_ID));
         return timeStr;
     }
@@ -60,6 +63,16 @@ public class TimeUtil {
      */
     public static String format(long timestamp) {
         String timeStr = DEFAULT_DATE_TIME_FORMATTER.format(new Date(timestamp).toInstant().atZone(DEFAULT_ZONE_ID));
+        return timeStr;
+    }
+    /**
+     * timestamp 转 字符串，默认⽇期格式
+     *
+     * @param timestamp
+     * @return
+     */
+    public static String formatWithTime(long timestamp) {
+        String timeStr = DEFAULT_DATE_TIME_FORMATTER_WITH_TIME.format(new Date(timestamp).toInstant().atZone(DEFAULT_ZONE_ID));
         return timeStr;
     }
     /**
