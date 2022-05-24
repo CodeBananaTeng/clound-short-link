@@ -125,7 +125,6 @@ public class DwsShortLinkVisitStatsApp {
                     visitStatsDO.setEndTime(endTime);
                     out.collect(visitStatsDO);
                 }
-
             }
         });
         reduceDS.print(">>>>>>>>>>>");
