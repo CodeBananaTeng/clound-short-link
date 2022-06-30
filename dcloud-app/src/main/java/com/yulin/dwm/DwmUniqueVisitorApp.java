@@ -44,6 +44,7 @@ public class DwmUniqueVisitorApp {
             @Override
             public Object getKey(JSONObject jsonObject) throws Exception {
                 return jsonObject.getShort("udid");
+
             }
         });
 
