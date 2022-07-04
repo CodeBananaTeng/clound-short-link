@@ -36,12 +36,13 @@ public class DwmShortLinkWideApp {
     /**
      * 定义SINK topic
      */
-    public static final String SINK_TOPIC = "dwn_link_visit_topic";
+    public static final String SINK_TOPIC = "dwm_link_visit_topic";
 
     /**
      * 定义消费者组
      */
     public static final String GROUP_ID = "dwm_short_link_group";
+
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();

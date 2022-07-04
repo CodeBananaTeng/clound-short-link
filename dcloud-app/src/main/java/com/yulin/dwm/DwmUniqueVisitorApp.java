@@ -43,7 +43,7 @@ public class DwmUniqueVisitorApp {
         KeyedStream<JSONObject, Object> keyedStream = jsonDS.keyBy(new KeySelector<JSONObject, Object>() {
             @Override
             public Object getKey(JSONObject jsonObject) throws Exception {
-                return jsonObject.getShort("udid");
+                return jsonObject.getString("udid");
 
             }
         });

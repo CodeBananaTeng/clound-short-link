@@ -12,8 +12,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Auther:LinuxTYL
@@ -26,18 +25,36 @@ public class LogServiceImpl implements LogService{
 
     private static final String TOPIC_NAME = "ods_link_visit_topic";
 
+//=======================测试数据记得删掉↓=========================
+    private static List<String> ipList = new ArrayList<>();
+
+    static {
+        ipList.add("14.197.9.110");
+        ipList.add("113.68.152.139");
+    }
+
+    private static List<String> refererList = new ArrayList<>();
+
+    static {
+        refererList.add("https://taobao.com");
+        refererList.add("https://douyin.com");
+    }
+    //=======================测试数据记得删掉↑=========================
     @Autowired
     private KafkaTemplate kafkaTemplate;
 
     @Override
     public void recordShortLinkLog(HttpServletRequest request, String shortLinkCode, Long accountNo) {
         //拿到用户的IP，浏览器头信息，短链码信息
-        String ip = CommonUtil.getIpAddr(request);
+        //String ip = CommonUtil.getIpAddr(request);
+        Random random = new Random();//测试数据记得删除
+        String ip = ipList.get(random.nextInt(ipList.size()));//测试数据记得删除
         //全部请求头
         Map<String, String> headerMap = CommonUtil.getAllRequestHeader(request);
         Map<String,String> avaliableMap = new HashMap<>();
         avaliableMap.put("user-agent",headerMap.get("user-agent"));
-        avaliableMap.put("referer",headerMap.get("referer"));
+//        avaliableMap.put("referer",headerMap.get("referer"));
+        avaliableMap.put("referer",refererList.get(random.nextInt(refererList.size())));//测试数据记得删除
         avaliableMap.put("accountNo",accountNo.toString());
         LogRecord logRecord = LogRecord.builder()
                 //日志类型

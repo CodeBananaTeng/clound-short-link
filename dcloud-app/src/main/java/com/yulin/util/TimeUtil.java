@@ -73,4 +73,10 @@ public class TimeUtil {
         return Date.from(localDateTime.atZone(DEFAULT_ZONE_ID).toInstant());
     }
 
+
+    public static String format(long timeStamp, String pattern) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+        String timeStr = dateTimeFormatter.format(new Date(timeStamp).toInstant().atZone(DEFAULT_ZONE_ID));
+        return timeStr;
+    }
 }
