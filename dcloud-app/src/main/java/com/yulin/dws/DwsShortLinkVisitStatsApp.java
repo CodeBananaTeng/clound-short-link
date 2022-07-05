@@ -127,6 +127,7 @@ public class DwsShortLinkVisitStatsApp {
                                 Collector<Object> out) throws Exception {
 
                 for (ShortLinkVisitStatsDO shortLinkVisitStatsDO : iterable) {
+
                     //窗口开始和结束时间
                     String startTime = TimeUtil.format(context.window().getStart(),"yyyy-MM-dd HH:mm:ss");
                     String endTime = TimeUtil.format(context.window().getEnd(),"yyyy-MM-dd HH:mm:ss");
